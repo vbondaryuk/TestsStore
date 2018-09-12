@@ -1,22 +1,48 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
+using TestsStore.VSTestLogger.Models;
+using TestsStore.VSTestLogger.Services;
 
 namespace TestsStore.VSTestLogger
 {
-	[FriendlyName(FriendlyName)]
-	[ExtensionUri(ExtensionUri)]
+	[FriendlyName(Constants.LoggerFriendlyName)]
+	[ExtensionUri(Constants.LoggerExtensionUri)]
 	public class Logger : ITestLoggerWithParameters
 	{
-		private const string ExtensionUri = "logger://Microsoft/TestPlatform/TestStoreLogger/v1";
-		private const string FriendlyName = "TestStoreLogger";
-
 		private Dictionary<string, string> parametersDictionary;
+		private DateTime startTime;
+		private Project project;
+		private Build build;
+
+
+		private ITestsStoreService testsStoreService;
 
 		public void Initialize(TestLoggerEvents events, string testRunDirectory)
 		{
-			events.TestRunStart += OnTestRunStart;
+			startTime = DateTime.Now;
+
+			if (this.parametersDictionary.TryGetValue(Constants.TestsStoreApiUrl, out string testsStoreApiUrl)
+				&& this.parametersDictionary.TryGetValue(Constants.Project, out string projectName)
+				&& this.parametersDictionary.TryGetValue(Constants.Build, out string buildName))
+			{
+				testsStoreService = new TestsStoreService(testsStoreApiUrl);
+				project = testsStoreService.GetProjectAsync(projectName).GetAwaiter().GetResult();
+				build = new Build
+				{
+					Id = Guid.NewGuid(),
+					Name = buildName,
+					StartDate = DateTime.Now
+				};
+				testsStoreService.AddBuildAsync(project, build).GetAwaiter().GetResult();
+			}
+			else
+			{
+				return;
+			}
+
 			events.TestResult += OnTestResult;
 			events.TestRunComplete += OnTestRunComplete;
 		}
@@ -27,19 +53,17 @@ namespace TestsStore.VSTestLogger
 			Initialize(events, this.parametersDictionary[DefaultLoggerParameterNames.TestRunDirectory]);
 		}
 
-		private void OnTestRunStart(object sender, TestRunStartEventArgs e)
-		{
-
-		}
-
 		private void OnTestRunComplete(object sender, TestRunCompleteEventArgs e)
 		{
-
+			build.EndDateTime = DateTime.Now;
+			testsStoreService.UpdateBuildAsync(build).GetAwaiter().GetResult();
 		}
 
 		private void OnTestResult(object sender, TestResultEventArgs e)
 		{
-			
+			TestResult testresult = e.Result;
+			var testMethodResult = new TestMethodResult(testresult);
+			testsStoreService.AddTestAsync(project, build, testMethodResult).GetAwaiter().GetResult();
 		}
 	}
 }
