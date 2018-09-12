@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TestsStore.Logger.Models
+namespace TestsStore.VSTestLogger.Models
 {
-	public class Build
+	public class Project
 	{
 		public Guid Id { get; set; }
 

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 
-namespace TestsStore.Logger
+namespace TestsStore.VSTestLogger
 {
 	[FriendlyName(FriendlyName)]
 	[ExtensionUri(ExtensionUri)]

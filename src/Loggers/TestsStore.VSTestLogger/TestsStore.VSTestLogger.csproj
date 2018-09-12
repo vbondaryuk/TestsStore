@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
+    <AssemblyName>TestsStore.VSTestLogger</AssemblyName>
+    <RootNamespace>TestsStore.VSTestLogger</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

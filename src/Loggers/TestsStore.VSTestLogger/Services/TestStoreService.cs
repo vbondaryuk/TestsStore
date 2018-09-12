@@ -2,9 +2,9 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using TestsStore.Logger.Models;
+using TestsStore.VSTestLogger.Models;
 
-namespace TestsStore.Logger.Services
+namespace TestsStore.VSTestLogger.Services
 {
 	public class TestStoreService : ITestStoreService
 	{
@@ -34,7 +34,5 @@ namespace TestsStore.Logger.Services
 
 			return JsonConvert.DeserializeObject<Build>(jsonResponse);
 		}
-
-
 	}
 }
