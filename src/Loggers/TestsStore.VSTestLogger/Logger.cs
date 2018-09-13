@@ -34,7 +34,7 @@ namespace TestsStore.VSTestLogger
 				{
 					Id = Guid.NewGuid(),
 					Name = buildName,
-					StartDate = DateTime.Now
+					StartTime = DateTime.Now
 				};
 				testsStoreService.AddBuildAsync(project, build).GetAwaiter().GetResult();
 			}
@@ -55,7 +55,7 @@ namespace TestsStore.VSTestLogger
 
 		private void OnTestRunComplete(object sender, TestRunCompleteEventArgs e)
 		{
-			build.EndDateTime = DateTime.Now;
+			build.EndTime = DateTime.Now;
 			testsStoreService.UpdateBuildAsync(build).GetAwaiter().GetResult();
 		}
 

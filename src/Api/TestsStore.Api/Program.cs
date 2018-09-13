@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using TestsStore.Api.Infrastructure;
 
 namespace TestsStore.Api
 {
@@ -14,11 +11,28 @@ namespace TestsStore.Api
 	{
 		public static void Main(string[] args)
 		{
-			CreateWebHostBuilder(args).Build().Run();
+			CreateWebHostBuilder(args)
+				.Build()
+				.MigrateDbContext<TestsStoreContext>((context, services) =>
+				{
+					var env = services.GetService<IHostingEnvironment>();
+					var logger = services.GetService<ILogger<TestsStoreContextSeed>>();
+
+					new TestsStoreContextSeed()
+						.SeedAsync(context, env, logger)
+						.Wait();
+				})
+				.Run();
 		}
 
 		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
-				.UseStartup<Startup>();
+				.UseStartup<Startup>()
+				.ConfigureLogging((hostingContext, builder) =>
+				{
+					builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+					builder.AddConsole();
+					builder.AddDebug();
+				});
 	}
 }
