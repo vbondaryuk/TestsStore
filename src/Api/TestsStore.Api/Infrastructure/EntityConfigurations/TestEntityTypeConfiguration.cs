@@ -21,9 +21,11 @@ namespace TestsStore.Api.Infrastructure.EntityConfigurations
 				.IsRequired()
 				.HasMaxLength(300);
 
-			builder.Property(x => x.FullName)
+			builder.Property(x => x.ClassName)
 				.IsRequired()
 				.HasMaxLength(1000);
+
+			builder.HasIndex(x => new {x.ClassName, x.Name});
 
 			builder.HasOne(x => x.Project)
 				.WithMany(x => x.Tests)

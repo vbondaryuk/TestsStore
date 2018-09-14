@@ -1,21 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
-    <AssemblyName>TestsStore.VSTestLogger</AssemblyName>
-    <RootNamespace>TestsStore.VSTestLogger</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard1.5</TargetFramework>
+		<AssemblyName>TestsStore.VS.TestLogger</AssemblyName>
+		<RootNamespace>TestsStore.VS.TestLogger</RootNamespace>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="15.8.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>C:\Users\Vladimir_Bondariuk\.nuget\packages\newtonsoft.json\9.0.1\lib\netstandard1.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="15.8.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+		<PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+		<PackageReference Include="System.Net.Http" Version="4.3.3" />
+	</ItemGroup>
 
 </Project>

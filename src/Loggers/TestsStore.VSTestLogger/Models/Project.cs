@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TestsStore.VSTestLogger.Models
+namespace TestsStore.VS.TestLogger.Models
 {
 	public class Project
 	{

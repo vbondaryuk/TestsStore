@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TestsStore.VS.TestLogger.Models
+namespace TestsStore.Api.QueryModels
 {
-	public class Build
+	public class BuildQueryModel
 	{
 		public Guid Id { get; set; }
 

@@ -1,0 +1,6 @@
+2018-09-14 18:49:21.550 +03:00 [INF] Route matched with {action = "Get", controller = "Project"}. Executing action TestsStore.Api.Controllers.ProjectController.Get (TestsStore.Api)
+2018-09-14 18:49:21.644 +03:00 [INF] Executing action method TestsStore.Api.Controllers.ProjectController.Get (TestsStore.Api) - Validation state: "Valid"
+2018-09-14 18:49:21.783 +03:00 [INF] Executed action method TestsStore.Api.Controllers.ProjectController.Get (TestsStore.Api), returned result Microsoft.AspNetCore.Mvc.OkObjectResult in 126.76830000000001ms.
+2018-09-14 18:49:21.795 +03:00 [INF] Executing ObjectResult, writing value of type 'System.Collections.Generic.List`1[[TestsStore.Api.Model.Project, TestsStore.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2018-09-14 18:49:21.858 +03:00 [INF] Executed action TestsStore.Api.Controllers.ProjectController.Get (TestsStore.Api) in 230.161ms
+2018-09-14 18:50:23.397 +03:00 [INF] Route matched with {action = "Get", controller = "Project"}. Executing action TestsStore.Api.Controllers.ProjectController.Get (TestsStore.Api)

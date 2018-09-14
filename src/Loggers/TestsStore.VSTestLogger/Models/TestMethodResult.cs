@@ -2,17 +2,21 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
-namespace TestsStore.VSTestLogger.Models
+namespace TestsStore.VS.TestLogger.Models
 {
 	public class TestMethodResult
 	{
+		public Guid ProjectId { get; }
+
+		public Guid BuildId { get; }
+
 		public string Name { get; }
 
 		public string ClassName { get; }
 
 		public TimeSpan Duration { get; }
 
-		public string Outcome { get; }
+		public string Status { get; }
 
 		public string Messages { get; }
 
@@ -20,12 +24,14 @@ namespace TestsStore.VSTestLogger.Models
 
 		public string ErrorMessage { get; }
 
-		public TestMethodResult(TestResult testResult)
+		public TestMethodResult(Guid projectId, Guid buildId, TestResult testResult)
 		{
+			ProjectId = projectId;
+			BuildId = buildId;
 			Name = testResult.TestCase.DisplayName;
 			ClassName = testResult.TestCase.FullyQualifiedName.Substring(0, testResult.TestCase.FullyQualifiedName.LastIndexOf('.'));
 			Duration = testResult.Duration;
-			Outcome = RetrieveOutcome(testResult);
+			Status = RetrieveOutcome(testResult);
 			Messages = string.Join(Environment.NewLine, testResult.Messages.Select(x => x.Text));
 			ErrorMessage = testResult.ErrorMessage;
 			StackTrace = testResult.ErrorStackTrace;
@@ -43,5 +49,5 @@ namespace TestsStore.VSTestLogger.Models
 	}
 
 
-	
+
 }

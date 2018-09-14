@@ -9,27 +9,29 @@ namespace TestsStore.Api.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class ProjectsController : ControllerBase
+	public class ProjectController : ControllerBase
 	{
 		private readonly TestsStoreContext testsStoreContext;
 
-		public ProjectsController(TestsStoreContext testsStoreContext)
+		public ProjectController(TestsStoreContext testsStoreContext)
 		{
 			this.testsStoreContext = testsStoreContext ?? throw new ArgumentNullException(nameof(testsStoreContext));
 		}
 
+		// GET project/items
 		[HttpGet]
-		public async Task<ActionResult> Get()
+		[Route("items")]
+		public async Task<IActionResult> Get()
 		{
 			var projects = await testsStoreContext.Projects.ToListAsync();
 
 			return Ok(projects);
 		}
 
-		// GET projects/id/name
+		// GET project/id/guid
 		[HttpGet]
 		[Route("id/{id:Guid}")]
-		public async Task<ActionResult> Get(Guid id)
+		public async Task<IActionResult> Get(Guid id)
 		{
 			var project = await testsStoreContext.Projects
 				.FirstOrDefaultAsync(x => x.Id == id);
@@ -37,17 +39,29 @@ namespace TestsStore.Api.Controllers
 			return Ok(project);
 		}
 
-		// GET projects/name/name
+		// GET project/name/name
 		[HttpGet]
 		[Route("name/{name:minlength(1)}")]
-		public async Task<ActionResult> Get(string name)
+		public async Task<IActionResult> Get(string name)
 		{
 			var project = await testsStoreContext.Projects
 				.FirstOrDefaultAsync(x => x.Name == name);
 
+			return Ok(project);
+		}
+
+		//Post project/items
+		[HttpPost]
+		[Route("items")]
+		public async Task<IActionResult> CreateProject([FromBody]Project projectForInsert)
+		{
+			var project = await testsStoreContext.Projects
+				.FirstOrDefaultAsync(x => x.Name == projectForInsert.Name);
+
 			if (project == null)
 			{
-				var projectEntry = await testsStoreContext.Projects.AddAsync(new Project(name));
+				project = new Project(projectForInsert.Name);
+				var projectEntry = await testsStoreContext.Projects.AddAsync(project);
 				await testsStoreContext.SaveChangesAsync();
 				project = projectEntry.Entity;
 			}

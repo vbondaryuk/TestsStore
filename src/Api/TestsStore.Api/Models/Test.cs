@@ -9,7 +9,7 @@ namespace TestsStore.Api.Model
 
 		public string Name { get; set; }
 
-		public string FullName { get; set; }
+		public string ClassName { get; set; }
 
 		public Guid ProjectId { get; set; }
 

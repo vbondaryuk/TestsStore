@@ -2,9 +2,9 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using TestsStore.VSTestLogger.Models;
+using TestsStore.VS.TestLogger.Models;
 
-namespace TestsStore.VSTestLogger.Services
+namespace TestsStore.VS.TestLogger.Services
 {
 	public class TestsStoreService : ITestsStoreService
 	{
@@ -17,16 +17,26 @@ namespace TestsStore.VSTestLogger.Services
 
 		public async Task<Project> GetProjectAsync(string projectName)
 		{
-			string response = await client.GetStringAsync($"projects/{projectName}").ConfigureAwait(false);
+			string responseJson = await client.GetStringAsync($"project/name/{projectName}").ConfigureAwait(false);
+
+			if (string.IsNullOrWhiteSpace(responseJson))
+			{
+				var projectInfo = new {Name = projectName};
+				var buildContent = new StringContent(JsonConvert.SerializeObject(projectInfo), System.Text.Encoding.UTF8, "application/json");
+				var response = await client.PostAsync("project/items", buildContent).ConfigureAwait(false);
+
+				response.EnsureSuccessStatusCode();
+
+				responseJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+			}
 			
-			return JsonConvert.DeserializeObject<Project>(response);
+			return JsonConvert.DeserializeObject<Project>(responseJson);
 		}
 
-		public async Task<Build> AddBuildAsync(Project project, Build build)
+		public async Task<Build> AddBuildAsync(Build build)
 		{
-			var byuildInfo = new {ProjectId = project.Id, Build = build};
-			var buildContent = new StringContent(JsonConvert.SerializeObject(byuildInfo), System.Text.Encoding.UTF8, "application/json");
-			var response = await client.PostAsync("builds/", buildContent).ConfigureAwait(false);
+			var buildContent = new StringContent(JsonConvert.SerializeObject(build), System.Text.Encoding.UTF8, "application/json");
+			var response = await client.PostAsync("build/items", buildContent).ConfigureAwait(false);
 
 			response.EnsureSuccessStatusCode();
 
@@ -38,16 +48,15 @@ namespace TestsStore.VSTestLogger.Services
 		public async Task UpdateBuildAsync(Build build)
 		{
 			var buildContent = new StringContent(JsonConvert.SerializeObject(build), System.Text.Encoding.UTF8, "application/json");
-			var response = await client.PutAsync("builds/", buildContent).ConfigureAwait(false);
+			var response = await client.PutAsync("build/items", buildContent).ConfigureAwait(false);
 
 			response.EnsureSuccessStatusCode();
 		}
 
-		public async Task AddTestAsync(Project project, Build build, TestMethodResult testMethodResult)
+		public async Task AddTestAsync(TestMethodResult testMethodResult)
 		{
-			var testInfo = new { ProjectId = project.Id, BuildId = build.Id, TestResult = testMethodResult };
-			var testContent = new StringContent(JsonConvert.SerializeObject(testInfo), System.Text.Encoding.UTF8, "application/json");
-			var response = await client.PostAsync("tests/", testContent).ConfigureAwait(false);
+			var testContent = new StringContent(JsonConvert.SerializeObject(testMethodResult), System.Text.Encoding.UTF8, "application/json");
+			var response = await client.PostAsync("testresult/items", testContent).ConfigureAwait(false);
 
 			response.EnsureSuccessStatusCode();
 		}

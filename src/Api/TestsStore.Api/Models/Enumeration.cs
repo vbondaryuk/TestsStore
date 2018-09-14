@@ -48,5 +48,27 @@ namespace TestsStore.Api.Model
 		}
 
 		public override int GetHashCode() => Id.GetHashCode();
+
+		public static T FromValue<T>(Guid value) where T : Enumeration
+		{
+			var matchingItem = Parse<T, Guid>(value, "value", item => item.Id == value);
+			return matchingItem;
+		}
+
+		public static T FromDisplayName<T>(string displayName) where T : Enumeration
+		{
+			var matchingItem = Parse<T, string>(displayName, "display name", item => item.Name == displayName);
+			return matchingItem;
+		}
+
+		private static T Parse<T, K>(K value, string description, Func<T, bool> predicate) where T : Enumeration
+		{
+			var matchingItem = GetAll<T>().FirstOrDefault(predicate);
+
+			if (matchingItem == null)
+				throw new InvalidOperationException($"'{value}' is not a valid {description} in {typeof(T)}");
+
+			return matchingItem;
+		}
 	}
 }

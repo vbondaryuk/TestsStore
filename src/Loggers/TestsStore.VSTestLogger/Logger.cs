@@ -1,42 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
-using TestsStore.VSTestLogger.Models;
-using TestsStore.VSTestLogger.Services;
+using TestsStore.VS.TestLogger.Models;
+using TestsStore.VS.TestLogger.Services;
 
-namespace TestsStore.VSTestLogger
+namespace TestsStore.VS.TestLogger
 {
 	[FriendlyName(Constants.LoggerFriendlyName)]
 	[ExtensionUri(Constants.LoggerExtensionUri)]
-	public class Logger : ITestLoggerWithParameters
+	internal class TestStoreLogger : ITestLoggerWithParameters
 	{
 		private Dictionary<string, string> parametersDictionary;
-		private DateTime startTime;
 		private Project project;
 		private Build build;
-
+		private bool isFailed;
 
 		private ITestsStoreService testsStoreService;
 
 		public void Initialize(TestLoggerEvents events, string testRunDirectory)
 		{
-			startTime = DateTime.Now;
+			Console.WriteLine($"Initializing {Constants.LoggerFriendlyName}.");
 
-			if (this.parametersDictionary.TryGetValue(Constants.TestsStoreApiUrl, out string testsStoreApiUrl)
-				&& this.parametersDictionary.TryGetValue(Constants.Project, out string projectName)
-				&& this.parametersDictionary.TryGetValue(Constants.Build, out string buildName))
+			var value = string.Join(Environment.NewLine, parametersDictionary.Select(x => $"key:{x.Key} value:{x.Value}"));
+			Console.WriteLine(value);
+			if (this.parametersDictionary.TryGetValue(Constants.Project, out string projectName)
+				&& this.parametersDictionary.TryGetValue(Constants.Build, out string buildName)
+				&& this.parametersDictionary.TryGetValue(Constants.Url, out string testsStoreApiUrl))
 			{
 				testsStoreService = new TestsStoreService(testsStoreApiUrl);
 				project = testsStoreService.GetProjectAsync(projectName).GetAwaiter().GetResult();
+
 				build = new Build
 				{
-					Id = Guid.NewGuid(),
+					ProjectId = project.Id,
 					Name = buildName,
-					StartTime = DateTime.Now
+					StartTime = DateTime.Now,
+					Status = "None"
 				};
-				testsStoreService.AddBuildAsync(project, build).GetAwaiter().GetResult();
+
+				build = testsStoreService.AddBuildAsync(build).GetAwaiter().GetResult();
 			}
 			else
 			{
@@ -56,14 +61,20 @@ namespace TestsStore.VSTestLogger
 		private void OnTestRunComplete(object sender, TestRunCompleteEventArgs e)
 		{
 			build.EndTime = DateTime.Now;
+			build.Status = isFailed ? "Failed" : "Passed";
 			testsStoreService.UpdateBuildAsync(build).GetAwaiter().GetResult();
 		}
 
 		private void OnTestResult(object sender, TestResultEventArgs e)
 		{
-			TestResult testresult = e.Result;
-			var testMethodResult = new TestMethodResult(testresult);
-			testsStoreService.AddTestAsync(project, build, testMethodResult).GetAwaiter().GetResult();
+			TestResult testResult = e.Result;
+			var testMethodResult = new TestMethodResult(project.Id, build.Id, testResult);
+			testsStoreService.AddTestAsync(testMethodResult).GetAwaiter().GetResult();
+
+			if (!isFailed && testResult.Outcome == TestOutcome.Failed)
+			{
+				isFailed = true;
+			}
 		}
 	}
 }

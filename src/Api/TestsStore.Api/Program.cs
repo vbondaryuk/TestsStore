@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.IO;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Serilog;
 using TestsStore.Api.Infrastructure;
 
 namespace TestsStore.Api
@@ -28,11 +30,6 @@ namespace TestsStore.Api
 		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
 				.UseStartup<Startup>()
-				.ConfigureLogging((hostingContext, builder) =>
-				{
-					builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-					builder.AddConsole();
-					builder.AddDebug();
-				});
+				.UseSerilog();
 	}
 }

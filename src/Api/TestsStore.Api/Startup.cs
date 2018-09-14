@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +8,10 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Serilog;
 using TestsStore.Api.Infrastructure;
+using TestsStore.Api.Infrastructure.Filters;
 
 namespace TestsStore.Api
 {
@@ -25,22 +24,32 @@ namespace TestsStore.Api
 
 		public IConfiguration Configuration { get; }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services
 				.AddCustomDbContext(Configuration)
-				.AddMvc()
+				.AddMvc(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
+				.AddControllersAsServices()
+				.AddJsonOptions(options =>
+					{
+						options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+					})
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 		}
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
 		{
+			var logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(Configuration)
+				.Enrich.WithProperty("TestStore.Api", "Serilog Web App");
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
 			}
+
+			Log.Logger = logger.CreateLogger();
+			loggerFactory.AddSerilog(Log.Logger);
 
 			app.UseMvc();
 		}
