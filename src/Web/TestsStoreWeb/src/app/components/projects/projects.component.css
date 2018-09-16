@@ -1,0 +1,12 @@
+.selected {
+    background-color: aquamarine;
+}
+
+.flexcontainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.projects, .builds {
+    display: inline-block;
+}

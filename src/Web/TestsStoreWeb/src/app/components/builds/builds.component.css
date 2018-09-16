@@ -1,0 +1,15 @@
+.selected {
+    background-color: aquamarine;
+}
+
+.flexcontainer {
+    display: flex;
+    flex-direction: row;
+}
+
+mat-nav-list, ngx-charts-bar-vertical{
+    display: inline-block;
+}
+ngx-charts-legend,.chart-legend{
+    display: none;
+}

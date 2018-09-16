@@ -35,6 +35,15 @@ namespace TestsStore.Api
 						options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 					})
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+			services.AddCors(options =>
+			{
+				options.AddPolicy("CorsPolicy",
+					builder => builder.AllowAnyOrigin()
+						.AllowAnyMethod()
+						.AllowAnyHeader()
+						.AllowCredentials());
+			});
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -51,6 +60,7 @@ namespace TestsStore.Api
 			Log.Logger = logger.CreateLogger();
 			loggerFactory.AddSerilog(Log.Logger);
 
+			app.UseCors("CorsPolicy");
 			app.UseMvc();
 		}
 	}

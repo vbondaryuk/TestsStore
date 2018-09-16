@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TestsStore.Api.Model
+namespace TestsStore.Api.Models
 {
 	public class Test
 	{

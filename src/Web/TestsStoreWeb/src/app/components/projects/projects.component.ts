@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { TestsStoreService } from "../../core/services/teststore.service";
-import { Project } from '../../core/models/project';
+import { TestsStoreService } from "../../core/services/testsstore.service";
+import { IProject } from '../../core/models/project';
 
 @Component({
   selector: 'app-projects',
@@ -9,16 +9,23 @@ import { Project } from '../../core/models/project';
 })
 
 export class ProjectsComponent implements OnInit {
-  
-  projects: Project[];
 
-  constructor(private testsStoreService TestsStoreService) { }
+  projects: IProject[];
+  selectedProject: IProject;
+
+  constructor(private testsStoreService: TestsStoreService) { }
 
   ngOnInit() {
     this.getProjects();
   }
 
-  getProjects():void{
-    this.testsStoreService.
+  getProjects(): void {
+    this.testsStoreService.getProjects()
+      .subscribe(projects => this.projects = projects);
+  }
+
+  onRowClicked(item: IProject) {
+    this.selectedProject = item;
+    console.log(item);
   }
 }

@@ -1,4 +1,4 @@
-export interface IProject{
+export interface IStatus{
     id: string;
     name: string;
 }

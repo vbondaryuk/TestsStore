@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestsStore.Api.Infrastructure;
-using TestsStore.Api.Model;
+using TestsStore.Api.Models;
 using TestsStore.Api.QueryModels;
 
 namespace TestsStore.Api.Controllers

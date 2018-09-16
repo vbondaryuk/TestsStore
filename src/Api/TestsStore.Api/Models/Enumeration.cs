@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace TestsStore.Api.Model
+namespace TestsStore.Api.Models
 {
 	public abstract class Enumeration : IComparable
 	{

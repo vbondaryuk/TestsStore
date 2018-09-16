@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TestsStore.Api.Model;
+using TestsStore.Api.Models;
 
 namespace TestsStore.Api.Infrastructure.EntityConfigurations
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TestsStore.Api.Model
+namespace TestsStore.Api.Models
 {
 	public class Status : Enumeration
 	{

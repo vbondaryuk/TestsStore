@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TestsStore.Api.Model
+namespace TestsStore.Api.Models
 {
 	public class Build
 	{
-		public Guid Id { get; set; } 
+		public Guid Id { get; set; }
 
 		public string Name { get; set; }
 
@@ -21,7 +21,7 @@ namespace TestsStore.Api.Model
 
 		public Project Project { get; set; }
 
-		public TimeSpan Duration => EndTime.Subtract(StartTime);
+		public int Duration => EndTime == DateTime.MinValue ? 0 : EndTime.Subtract(StartTime).Seconds;
 
 		public ICollection<TestResult> TestResults { get; set; }
 	}

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using TestsStore.Api.Infrastructure.EntityConfigurations;
-using TestsStore.Api.Model;
+using TestsStore.Api.Models;
 
 namespace TestsStore.Api.Infrastructure
 {

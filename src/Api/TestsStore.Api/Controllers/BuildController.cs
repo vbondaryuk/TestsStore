@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestsStore.Api.Infrastructure;
-using TestsStore.Api.Model;
+using TestsStore.Api.Models;
 using TestsStore.Api.QueryModels;
 
 namespace TestsStore.Api.Controllers
@@ -25,6 +25,7 @@ namespace TestsStore.Api.Controllers
 		public async Task<IActionResult> Get(Guid id)
 		{
 			var build = await testsStoreContext.Builds
+				.Include(x => x.Status)
 				.FirstOrDefaultAsync(x => x.Id == id);
 
 			return Ok(build);
@@ -36,7 +37,9 @@ namespace TestsStore.Api.Controllers
 		public async Task<IActionResult> GetByProject(Guid projectId)
 		{
 			var builds = await testsStoreContext.Builds
+				.Include(x => x.Status)
 				.Where(x => x.ProjectId == projectId)
+				.OrderByDescending(x=>x.StartTime)
 				.ToListAsync();
 
 			return Ok(builds);

@@ -1,3 +1,30 @@
-<p>
-  builds works!
-</p>
+<div class="flexcontainer">
+  <mat-nav-list>
+    <mat-list-item *ngFor="let build of builds" 
+      [class.selected]="selectedBuild?.id == build.id" 
+      (click)="onRowClicked(build)">
+        {{build.name}}
+    </mat-list-item>
+  </mat-nav-list>
+  
+  <ngx-charts-bar-vertical *ngIf="single?.length > 0"
+    [view]="view"
+    [scheme]="colorScheme"
+    [results]="single"
+    [gradient]="gradient"
+    [xAxis]="showXAxis"
+    [yAxis]="showYAxis"
+    [legend]="showLegend"
+    [showXAxisLabel]="showXAxisLabel"
+    [showYAxisLabel]="showYAxisLabel"
+    [xAxisLabel]="xAxisLabel"
+    [yAxisLabel]="yAxisLabel"
+    [xAxisTickFormatting]="tickFormatting"
+    (select)="onSelect($event)">
+    <ng-template #tooltipTemplate let-model="model">
+      <span class="tooltip-label">{{model.name.indexOf( "*" ) > 0 ? model.name.substring(0, model.name.indexOf( "*" )) : model.name}}</span>
+      <span class="tooltip-val">{{model.value}}</span>
+    </ng-template>
+  </ngx-charts-bar-vertical>
+</div>
+

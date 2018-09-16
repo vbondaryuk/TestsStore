@@ -1,3 +1,16 @@
-<p>
-  projects works!
-</p>
+<div class="flexcontainer">
+  <div class="projects">
+    <mat-nav-list>
+      <mat-list-item *ngFor="let project of projects" 
+        [class.selected]="selectedProject?.id == project.id" 
+        (click)="onRowClicked(project)">
+          {{project.name}}
+      </mat-list-item>
+    </mat-nav-list>
+  </div>
+  <div class="builds">
+    <app-builds *ngIf="selectedProject" 
+      [project]="selectedProject">
+    </app-builds>
+  </div>
+</div>

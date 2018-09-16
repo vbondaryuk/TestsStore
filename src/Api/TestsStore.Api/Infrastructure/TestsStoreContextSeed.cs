@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Polly;
-using TestsStore.Api.Model;
+using TestsStore.Api.Models;
 
 namespace TestsStore.Api.Infrastructure
 {

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestsStore.Api.Infrastructure;
-using TestsStore.Api.Model;
+using TestsStore.Api.Models;
 
 namespace TestsStore.Api.Controllers
 {
@@ -23,7 +24,8 @@ namespace TestsStore.Api.Controllers
 		[Route("items")]
 		public async Task<IActionResult> Get()
 		{
-			var projects = await testsStoreContext.Projects.ToListAsync();
+			var projects = await testsStoreContext.Projects
+				.OrderBy(x => x.Name).ToListAsync();
 
 			return Ok(projects);
 		}
