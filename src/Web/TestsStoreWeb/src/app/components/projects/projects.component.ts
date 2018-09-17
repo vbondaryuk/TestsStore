@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TestsStoreService } from "../../core/services/testsstore.service";
 import { IProject } from '../../core/models/project';
+import { MatTableDataSource } from '@angular/material';
 
 @Component({
   selector: 'app-projects',
@@ -9,9 +10,12 @@ import { IProject } from '../../core/models/project';
 })
 
 export class ProjectsComponent implements OnInit {
-
-  projects: IProject[];
+  
+  projects: IProject[] = [];
   selectedProject: IProject;
+
+  displayedColumns: string[] = ['name'];
+  dataSource = new MatTableDataSource(this.projects);
 
   constructor(private testsStoreService: TestsStoreService) { }
 
@@ -21,11 +25,17 @@ export class ProjectsComponent implements OnInit {
 
   getProjects(): void {
     this.testsStoreService.getProjects()
-      .subscribe(projects => this.projects = projects);
+      .subscribe(projects => {
+        this.projects = projects;
+        this.dataSource = new MatTableDataSource(this.projects);
+      });
+  }
+
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   onRowClicked(item: IProject) {
     this.selectedProject = item;
-    console.log(item);
   }
 }

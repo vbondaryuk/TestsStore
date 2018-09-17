@@ -39,7 +39,7 @@ namespace TestsStore.Api.Controllers
 			var builds = await testsStoreContext.Builds
 				.Include(x => x.Status)
 				.Where(x => x.ProjectId == projectId)
-				.OrderByDescending(x=>x.StartTime)
+				.OrderByDescending(x => x.StartTime)
 				.ToListAsync();
 
 			return Ok(builds);

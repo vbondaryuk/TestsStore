@@ -7,9 +7,24 @@
     flex-direction: row;
 }
 
-mat-nav-list, ngx-charts-bar-vertical{
+.builds__list, .builds__chart{
     display: inline-block;
 }
-ngx-charts-legend,.chart-legend{
-    display: none;
+
+.builds__list{
+    max-height: 60vh;
+    overflow-y: scroll;
+    min-width: 30%;
+}
+
+.builds__chart{
+    margin: 0 5em;
+}
+
+.mat-table {
+    width: 100%;
+}
+
+.mat-row:hover {
+    cursor: pointer;
 }

@@ -1,7 +1,11 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { TestsStoreService } from 'src/app/core/services/testsstore.service';
 import { IProject } from '../../core/models/project';
 import { IBuild } from '../../core/models/build';
+import { StatusService } from '../../core/services/status.service';
+import { MatSelectChange } from '@angular/material/select/index';
+import { Subject } from 'rxjs';
+import { MatTableDataSource } from '@angular/material';
 
 @Component({
   selector: 'app-builds',
@@ -14,48 +18,52 @@ export class BuildsComponent implements OnChanges, OnInit {
   @Input()
   project: IProject;
 
-  builds: IBuild[];
+  builds: IBuild[] = [];
   selectedBuild: IBuild;
+  
+  displayedColumns: string[] = ['name', 'status'];
+  dataSource = new MatTableDataSource(this.builds);
+
+  chartBuildsCountSubject = new Subject<number>();
+  chartBuildsCount: number;
 
   ////
-  single: any[];
-  multi: any[];
-
+  chartData: any[];
   view: any[] = [700, 400];
-
-  // options
-  showXAxis = true;
-  showYAxis = true;
-  gradient = false;
-  showLegend = true;
-  showXAxisLabel = true;
   xAxisLabel = 'Builds';
-  showYAxisLabel = true;
   yAxisLabel = 'Duration in seconds';
-
-  colorScheme = {
-    domain: []
-  };
+  colorScheme = { domain: [] };
+  tickFormatting;
   ////
 
-  constructor(private testsStoreService: TestsStoreService) {
+  constructor(
+    private testsStoreService: TestsStoreService,
+    private statusService: StatusService
+  ) {
     this.tickFormatting = (series) => {
-      var index = series.indexOf( "*" );
-      console.log(index);
+      var index = series.indexOf("*");
       if (index > 0) {
-        return series.substring(0, index); 
+        return series.substring(0, index);
       }
-      
+
       return series;
     }
-   }
+  }
 
   ngOnInit() {
+    this.chartBuildsCountSubject.subscribe((count: number) => {
+      this.chartBuildsCount = count;
+      this.showChart();
+    });
     this.getBuilds();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.getBuilds();
+    if (changes['project']) {
+      this.getBuilds();
+    } if (changes['number']) {
+      this.showChart();
+    }
   }
 
 
@@ -63,41 +71,48 @@ export class BuildsComponent implements OnChanges, OnInit {
     this.testsStoreService.getBuilds(this.project.id)
       .subscribe(builds => {
         this.builds = builds;
+        this.dataSource = new MatTableDataSource(this.builds);
         this.showChart();
       });
-
-    
   }
 
-  showChart(): void{
-    this.single = [];
+  showChart(): void {
+    this.chartData = [];
     this.colorScheme.domain = [];
 
     if (this.builds.length == 0) {
       return;
     }
     
-    let counter = 1;
-    for (let build of this.builds) {
-      const keyVal = new KeyValue();
-      keyVal.id = build.id;
-      keyVal.name = build.name +"*"+ counter;
-      keyVal.value = build.duration;
-      this.single.push(keyVal);
+    for (let i = 0; i < this.builds.length; i++) {
+      if (i > this.chartBuildsCount) {
+        break;
+      }
 
-      this.colorScheme.domain.push(build.status.name !== "Passed" ? "red" : "green");
-      counter++;
+      let build = this.builds[i];
+      const keyVal = new KeyValue();
+      keyVal.name = build.name + "*" + build.id;
+      keyVal.value = build.duration;
+      this.chartData.push(keyVal);
+
+      this.colorScheme.domain.push(this.statusService.getColor(build.status));
     }
+    
+    this.chartData = this.chartData.reverse();
+    this.colorScheme.domain = this.colorScheme.domain.reverse();
   }
+
   onRowClicked(item: IBuild) {
     this.selectedBuild = item;
-    console.log(item);
   }
-  tickFormatting;
+
   onSelect(event) {
     console.log(event);
   }
 
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 }
 
 export class KeyValue {

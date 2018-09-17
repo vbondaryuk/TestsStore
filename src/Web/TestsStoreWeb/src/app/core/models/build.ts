@@ -1,8 +1,7 @@
 import { IStatus } from "./status";
+import { IEntity } from "./entity";
 
-export interface IBuild{
-    id: string;
-    name: string;
+export interface IBuild extends IEntity {
     status: IStatus;
     startTime: Date;
     endTime: Date;

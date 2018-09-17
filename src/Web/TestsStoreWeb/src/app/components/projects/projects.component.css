@@ -9,4 +9,17 @@
 
 .projects, .builds {
     display: inline-block;
+    margin: 0 2em;
+}
+
+.builds {
+    width: 100%;
+}
+
+.mat-table {
+    width: 100%;
+}
+
+.mat-row:hover {
+    cursor: pointer;
 }
