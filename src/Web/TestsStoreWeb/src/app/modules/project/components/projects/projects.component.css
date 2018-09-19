@@ -1,0 +1,22 @@
+.projects {
+    width: 30%;
+    display: inline-block;
+}
+
+.projects{
+    /*minus nav bar*/
+    height: calc(100% - 56px);
+}
+
+.mat-table {
+    width: 100%;
+}
+
+.mat-row:hover {
+    cursor: pointer;
+}
+
+.table-container {
+    overflow: auto;
+    max-height: 100%
+}

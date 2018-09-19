@@ -3,35 +3,27 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing/app-routing.module';
-
-import { TestsComponent } from './components/tests/tests.component';
-import { TestDetailsComponent } from './components/test-details/test-details.component';
-import { BuildsComponent } from './components/builds/builds.component';
-import { ProjectsComponent } from './components/projects/projects.component';
+import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
-import { NgMaterialModule } from './ngmaterial.module';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { NumberSelectComponent } from './components/number-selects/number-select.component';
-import { BuildDetailsComponent } from './components/build-details/build-details.component';
+
+import { CommonAppModule } from './modules/common/common.module';
+import { BuildModule } from './modules/build/build.module';
+import { TestModule } from './modules/test/test.module';
+import { ProjectModule } from 'src/app/modules/project/project.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    TestsComponent,
-    TestDetailsComponent,
-    BuildsComponent,
-    BuildDetailsComponent,
-    ProjectsComponent,
-    NumberSelectComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,    
     HttpClientModule,
     FormsModule,
-    NgMaterialModule,
-    NgxChartsModule
+    CommonAppModule,
+    ProjectModule,
+    BuildModule,
+    TestModule
   ],
   providers: [],
   bootstrap: [AppComponent]

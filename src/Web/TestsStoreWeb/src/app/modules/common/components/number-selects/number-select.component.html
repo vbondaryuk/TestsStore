@@ -1,5 +1,5 @@
 <mat-form-field>
-    <mat-select placeholder={{placeholder}} [(ngModel)]="number" name="buildsCount" (selectionChange)="onSelectionChange($event)">
+    <mat-select placeholder={{placeholder}} [(ngModel)]="number" name="count" (selectionChange)="onSelectionChange($event)">
         <mat-option *ngFor="let count of numbers" [value]="count"> {{count}} </mat-option>
     </mat-select>
 </mat-form-field>

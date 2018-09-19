@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ProjectsComponent } from 'src/app/modules/project/components/projects/projects.component';
+import { BuildDetailsComponent } from 'src/app/modules/build/components/build-details/build-details.component';
 
-import { ProjectsComponent } from '../components/projects/projects.component';
-import { BuildDetailsComponent } from '../components/build-details/build-details.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/projects', pathMatch: 'full' },

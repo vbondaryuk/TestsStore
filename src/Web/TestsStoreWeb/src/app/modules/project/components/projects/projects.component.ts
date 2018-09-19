@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { TestsStoreService } from "../../core/services/testsstore.service";
-import { IProject } from '../../core/models/project';
 import { MatTableDataSource } from '@angular/material';
+import { Subject } from 'rxjs';
+import { IProject } from 'src/app/core/models/project';
+import { TestsStoreService } from 'src/app/core/services/testsstore.service';
 
 @Component({
   selector: 'app-projects',
@@ -12,7 +13,7 @@ import { MatTableDataSource } from '@angular/material';
 export class ProjectsComponent implements OnInit {
   
   projects: IProject[] = [];
-  selectedProject: IProject;
+  projectIdSubject = new Subject<string>();
 
   displayedColumns: string[] = ['name'];
   dataSource = new MatTableDataSource(this.projects);
@@ -20,6 +21,7 @@ export class ProjectsComponent implements OnInit {
   constructor(private testsStoreService: TestsStoreService) { }
 
   ngOnInit() {
+    this.dataSource.filterPredicate = (data: IProject, filter: string) => data.name.toLowerCase().indexOf(filter) != -1;
     this.getProjects();
   }
 
@@ -27,8 +29,9 @@ export class ProjectsComponent implements OnInit {
     this.testsStoreService.getProjects()
       .subscribe(projects => {
         this.projects = projects;
-        this.dataSource = new MatTableDataSource(this.projects);
+        this.dataSource.data = this.projects;
       });
+      
   }
 
   applyFilter(filterValue: string) {
@@ -36,6 +39,6 @@ export class ProjectsComponent implements OnInit {
   }
 
   onRowClicked(item: IProject) {
-    this.selectedProject = item;
+    this.projectIdSubject.next(item.id);
   }
 }
