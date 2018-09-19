@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TestsStore.Api.QueryModels
+namespace TestsStore.Api.CommandModels
 {
-	public class TestReslutQueryModel
+	public class TestReslutCommandModel
 	{
 		public Guid BuildId { get; set; }
 

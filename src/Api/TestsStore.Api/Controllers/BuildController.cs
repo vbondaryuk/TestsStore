@@ -3,9 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TestsStore.Api.CommandModels;
 using TestsStore.Api.Infrastructure;
 using TestsStore.Api.Models;
-using TestsStore.Api.QueryModels;
+using TestsStore.Api.ViewModels;
 
 namespace TestsStore.Api.Controllers
 {
@@ -31,6 +32,34 @@ namespace TestsStore.Api.Controllers
 			return Ok(build);
 		}
 
+		// GET build/id/guid/details
+		[HttpGet]
+		[Route("id/{id:Guid}/details")]
+		public async Task<IActionResult> GetDetails(Guid id)
+		{
+			var build = await testsStoreContext.Builds
+				.Include(x => x.Status)
+				.FirstOrDefaultAsync(x => x.Id == id);
+
+			var buildDetails = await testsStoreContext.TestResults
+				.Where(x => x.BuildId == id)
+				.GroupBy(x => x.StatusId)
+				.Select(x => new
+				{
+					StatusId = x.Key,
+					Count = x.Count()
+				}).ToListAsync();
+
+			var testsSummaryViewModels = buildDetails.Select(x => new TestsSummaryViewModel
+			{
+				Status = Enumeration.FromValue<Status>(x.StatusId).Name,
+				Count = x.Count
+			}).ToList();
+			var buildDetailsViewModel = new BuildDetailsViewModel(build, testsSummaryViewModels);
+
+			return Ok(buildDetailsViewModel);
+		}
+
 		// GET build/project/guid
 		[HttpGet]
 		[Route("project/{projectId:Guid}")]
@@ -48,13 +77,12 @@ namespace TestsStore.Api.Controllers
 		//Post build/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<IActionResult> CreateBuild([FromBody]BuildQueryModel buildQueryModel)
+		public async Task<IActionResult> CreateBuild([FromBody]BuildCommandModel buildCommandModel)
 		{
-			var build = QueryModelToBuild(buildQueryModel);
+			var build = HandleAddCommand(buildCommandModel);
 
-			var projectEntry = await testsStoreContext.Builds.AddAsync(build);
+			await testsStoreContext.Builds.AddAsync(build);
 			await testsStoreContext.SaveChangesAsync();
-			build = projectEntry.Entity;
 
 			return Ok(build);
 		}
@@ -62,15 +90,12 @@ namespace TestsStore.Api.Controllers
 		//Put build/items
 		[HttpPut]
 		[Route("items")]
-		public async Task<IActionResult> UpdateBuild([FromBody]BuildQueryModel buildQueryModel)
+		public async Task<IActionResult> UpdateBuild([FromBody]BuildCommandModel buildCommandModel)
 		{
-			var status = Enumeration.FromDisplayName<Status>(buildQueryModel.Status);
-
 			var build = await testsStoreContext.Builds
-				.FirstOrDefaultAsync(x => x.Id == buildQueryModel.Id);
+				.FirstOrDefaultAsync(x => x.Id == buildCommandModel.Id);
 
-			build.EndTime = buildQueryModel.EndTime;
-			build.StatusId = status.Id;
+			HandleUpdateCommand(build, buildCommandModel);
 
 			testsStoreContext.Builds.Update(build);
 			await testsStoreContext.SaveChangesAsync();
@@ -78,18 +103,27 @@ namespace TestsStore.Api.Controllers
 			return Ok(build);
 		}
 
-		private static Build QueryModelToBuild(BuildQueryModel buildQueryModel)
+		private static Build HandleAddCommand(BuildCommandModel buildCommandModel)
 		{
-			var status = Enumeration.FromDisplayName<Status>(buildQueryModel.Status);
+			var status = Enumeration.FromDisplayName<Status>(buildCommandModel.Status);
 			var build = new Build
 			{
 				Id = Guid.NewGuid(),
-				ProjectId = buildQueryModel.ProjectId,
-				Name = buildQueryModel.Name,
+				ProjectId = buildCommandModel.ProjectId,
+				Name = buildCommandModel.Name,
 				StatusId = status.Id,
-				StartTime = buildQueryModel.StartTime,
-				EndTime = buildQueryModel.EndTime
+				StartTime = buildCommandModel.StartTime,
+				EndTime = buildCommandModel.EndTime
 			};
+			return build;
+		}
+
+		private static Build HandleUpdateCommand(Build build, BuildCommandModel buildCommandModel)
+		{
+			var status = Enumeration.FromDisplayName<Status>(buildCommandModel.Status);
+			build.EndTime = buildCommandModel.EndTime;
+			build.StatusId = status.Id;
+
 			return build;
 		}
 	}

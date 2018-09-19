@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TestsStore.Api.CommandModels;
 using TestsStore.Api.Infrastructure;
 using TestsStore.Api.Models;
-using TestsStore.Api.QueryModels;
 
 namespace TestsStore.Api.Controllers
 {
@@ -31,14 +31,14 @@ namespace TestsStore.Api.Controllers
 			return Ok(testResult);
 		}
 
-		// GET testresult/project/guid/build/guid
+		// GET testresult/build/guid
 		[HttpGet]
-		[Route("project/{projectId:Guid}/build/{buildId:Guid}")]
-		public async Task<IActionResult> Get(Guid projectId, Guid buildId)
+		[Route("build/{buildId:Guid}")]
+		public async Task<IActionResult> GetItems(Guid buildId)
 		{
 			var testResults = await testsStoreContext.TestResults
 				.Include(x => x.Test)
-				.Where(x => x.Test.ProjectId == projectId && x.BuildId == buildId)
+				.Where(x => x.BuildId == buildId)
 				.ToListAsync();
 
 			return Ok(testResults);
@@ -47,9 +47,9 @@ namespace TestsStore.Api.Controllers
 		//Post testresult/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<IActionResult> CreateTestResult([FromBody]TestReslutQueryModel testReslutQueryModel)
+		public async Task<IActionResult> CreateTestResult([FromBody]TestReslutCommandModel testReslutCommandModel)
 		{
-			var testResultForInsert = await QueryModelToTest(testReslutQueryModel);
+			var testResultForInsert = await HandleAddCommand(testReslutCommandModel);
 
 			var projectEntry = await testsStoreContext.TestResults.AddAsync(testResultForInsert);
 			await testsStoreContext.SaveChangesAsync();
@@ -58,7 +58,7 @@ namespace TestsStore.Api.Controllers
 			return Ok(testResult);
 		}
 
-		private async Task<TestResult> QueryModelToTest(TestReslutQueryModel testReslutQueryModel)
+		private async Task<TestResult> HandleAddCommand(TestReslutCommandModel testReslutQueryModel)
 		{
 			var status = Enumeration.FromDisplayName<Status>(testReslutQueryModel.Status);
 			var test = await GetOrCreateTestAsync(testReslutQueryModel);
@@ -76,7 +76,7 @@ namespace TestsStore.Api.Controllers
 			};
 		}
 
-		private async Task<Test> GetOrCreateTestAsync(TestReslutQueryModel testReslutQueryModel)
+		private async Task<Test> GetOrCreateTestAsync(TestReslutCommandModel testReslutQueryModel)
 		{
 			var test = await testsStoreContext.Tests
 				.FirstOrDefaultAsync(x => x.Name == testReslutQueryModel.Name && x.ClassName == testReslutQueryModel.ClassName);
