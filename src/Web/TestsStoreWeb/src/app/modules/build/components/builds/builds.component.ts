@@ -1,9 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { TestsStoreService } from 'src/app/core/services/testsstore.service';
-import { Router } from "@angular/router";
+import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { Subject, BehaviorSubject } from 'rxjs';
-import { MatTableDataSource } from '@angular/material';
-import { IProject } from 'src/app/core/models/project';
 import { IBuild } from 'src/app/core/models/build';
 
 @Component({
@@ -16,46 +12,23 @@ export class BuildsComponent implements OnInit {
 
   @Input()
   projectIdSubject: Subject<string>;
-  projectId: string;
 
-  builds: IBuild[] = [];
-  buildsSubject = new BehaviorSubject<IBuild[]>(this.builds);
+  buildsSubject = new BehaviorSubject<IBuild[]>([]);
+  buildIdSubject = new BehaviorSubject<string>(null);
 
-  displayedColumns: string[] = ['name', 'status'];
-  dataSource = new MatTableDataSource(this.builds);
+  halfHeight: number;
 
-  constructor(
-    private router: Router,
-    private testsStoreService: TestsStoreService
-  ) {
-    this.dataSource.filterPredicate = (data: IBuild, filter: string) => data.name.toLowerCase().indexOf(filter) != -1 || data.status.name.toLowerCase().indexOf(filter) != -1;
-  }
+  constructor() { }
 
   ngOnInit() {
-    this.projectIdSubject.subscribe((projectId: string) => {
-      this.projectId = projectId;
-      this.getBuilds();
-    });
+    //this.onResize();
   }
 
-  getBuilds(): void {
-    this.testsStoreService.getBuilds(this.projectId)
-      .subscribe(builds => {
-        this.builds = builds;
-        this.dataSource.data = builds;
-        this.buildsSubject.next(builds);
-      });
+  @HostListener('window:resize')
+  onResize() {
+    let navbarElement = document.getElementsByClassName('navbar')[0];
+    
+    this.halfHeight = (window.innerHeight - navbarElement.clientHeight)  / 2;
   }
-
-  onRowClicked(item: IBuild) {
-    this.openBuildDetails(item.id);
-  }
-
-  openBuildDetails(id: string) {
-    this.router.navigate(['build/' + id]);
-  }
-
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
+  
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MatTableDataSource } from '@angular/material';
 import { Subject } from 'rxjs';
 import { IProject } from 'src/app/core/models/project';
@@ -12,17 +12,30 @@ import { TestsStoreService } from 'src/app/core/services/testsstore.service';
 
 export class ProjectsComponent implements OnInit {
   
+  searchString: string;
   projects: IProject[] = [];
   projectIdSubject = new Subject<string>();
 
+  tableContainerHeight: number;
   displayedColumns: string[] = ['name'];
   dataSource = new MatTableDataSource(this.projects);
 
-  constructor(private testsStoreService: TestsStoreService) { }
+  constructor(private testsStoreService: TestsStoreService) { 
+    this.dataSource.filterPredicate = (data: IProject, filter: string) => data.name.toLowerCase().indexOf(filter) != -1;
+  }
 
   ngOnInit() {
-    this.dataSource.filterPredicate = (data: IProject, filter: string) => data.name.toLowerCase().indexOf(filter) != -1;
+    this.onResize();    
     this.getProjects();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    let navbarElement = document.getElementsByClassName('navbar')[0];
+    let projectListHeaderElement = document.getElementsByClassName('projects__list-header')[0];
+    let projectListFilterElement = document.getElementsByClassName('projects__list-filter')[0];
+    
+    this.tableContainerHeight = window.innerHeight - navbarElement.clientHeight - projectListHeaderElement.clientHeight - projectListFilterElement.clientHeight - 55;
   }
 
   getProjects(): void {

@@ -1,3 +1,46 @@
-<p>
-  build-details works!
-</p>
+<div class="test-results-list">
+  <div class="card bg-light">
+    <div class="card-header test-results-list__header">
+      Test results
+    </div>
+    <div class="card-body">
+
+      <form class="test-results-list__filter">
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <i class="glyphicon glyphicon-search"></i>
+            </div>
+            <input type="text" class="form-control" name="searchString" placeholder="Type to search..." [(ngModel)]="searchString">
+          </div>
+        </div>
+      </form>
+
+
+      <div class="table-container" [style.height.px]="tableContainerHeight">
+        <table class="table table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>ClassName</th>
+              <th>Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let testResult of testResults | filter : 'test.name' : searchString; let i = index">
+              <td class="text-left align-middle">
+                {{testResult.test.className}}
+              </td>
+              <td class="text-left align-middle">
+                {{testResult.test.name}}
+              </td>
+              <td class="text-left text-white align-middle" [style.background-color]='getBackgroundColor(testResult.status.name)'>
+                {{testResult.status.name}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

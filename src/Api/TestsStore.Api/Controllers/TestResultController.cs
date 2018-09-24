@@ -31,14 +31,17 @@ namespace TestsStore.Api.Controllers
 			return Ok(testResult);
 		}
 
-		// GET testresult/build/guid
+		// GET testresult/items/build/guid
 		[HttpGet]
-		[Route("build/{buildId:Guid}")]
+		[Route("items/build/{buildId:Guid}")]
 		public async Task<IActionResult> GetItems(Guid buildId)
 		{
 			var testResults = await testsStoreContext.TestResults
 				.Include(x => x.Test)
+				.Include(x => x.Status)
 				.Where(x => x.BuildId == buildId)
+				.OrderBy(x => x.Test.ClassName)
+				.ThenBy(x => x.Test.Name)
 				.ToListAsync();
 
 			return Ok(testResults);

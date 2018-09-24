@@ -1,0 +1,7 @@
+.card{
+    min-height: 300px;
+}
+
+.row{
+    justify-content: flex-end;
+}

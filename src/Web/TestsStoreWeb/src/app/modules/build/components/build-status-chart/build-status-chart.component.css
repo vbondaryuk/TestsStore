@@ -1,8 +1,9 @@
 app-number-select {
-    display: block;
-    text-align: right;
+    display: inline-block;
 }
 
 .card {
-    width: 100%;
+    min-height: 300px;
 }
+
+.ngx-charts text { fill: #fff!important; }

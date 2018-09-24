@@ -5,10 +5,10 @@ import { BuildDetailsComponent } from 'src/app/modules/build/components/build-de
 
 
 const routes: Routes = [
-  { path: '', redirectTo: '/projects', pathMatch: 'full' },
-  { path: 'projects', data: {breadcrumb: 'projects'}, component: ProjectsComponent },
-  { path: 'build/:id', data: {breadcrumb: 'build'}, component: BuildDetailsComponent }
-
+  { path: '', redirectTo: 'projects', pathMatch: 'full' },
+  { path: '**', redirectTo: 'welcome', pathMatch: 'full' },
+  { path: 'projects', component: ProjectsComponent },
+  { path: 'build/:id', component: BuildDetailsComponent }
 ];
 
 @NgModule({

@@ -5,6 +5,8 @@ import { IProject } from "../models/project";
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IBuild } from "../models/build";
+import { IBuildDetails } from "src/app/core/models/buildDetails";
+import { ITestResult } from "../models/testResult";
 
 @Injectable({ providedIn: 'root' })
 export class TestsStoreService {
@@ -22,9 +24,20 @@ export class TestsStoreService {
     }
 
     getBuilds(projectId: string): Observable<IBuild[]> {
-        return this.http.get<IBuild[]>(this.baseUrl + "build/project/"+projectId)
+        return this.http.get<IBuild[]>(this.baseUrl + "build/project/" + projectId)
             .pipe(catchError(this.handleError('getBuilds', [])));
     }
+
+    getBuildDetails(buildId: string): Observable<IBuildDetails> {
+        return this.http.get<IBuildDetails>(this.baseUrl + "build/id/" + buildId + "/details")
+            .pipe(catchError(this.handleError('getBuilds', null)));
+    }
+    
+    getTestResults(buildId: string): Observable<ITestResult[]> {
+        return this.http.get<ITestResult[]>(this.baseUrl + "testresult/items/build/" + buildId)
+            .pipe(catchError(this.handleError('getBuilds', [])));
+    }
+
 
 
     private handleError<T>(operation = 'operation', result?: T) {

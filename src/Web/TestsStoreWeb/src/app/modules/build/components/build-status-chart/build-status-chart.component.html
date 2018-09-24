@@ -1,20 +1,23 @@
-<div class="card bg-light">
-    <div class="card-header">
-      Build statuses
-    </div>
-    <div class="card-body">
+<div class="build__status__chart">
+    <div class="card bg-light">
+        <div class="card-header">
+          Build statuses
+        </div>
+        <div class="card-body" *ngIf="builds.length > 0">
+            <!-- [ngStyle]="{'width': width + 'px','height':height+'px'}"> -->
+    
+          <!-- <app-number-select placeholder="Builds" [numberSubject]="chartBuildsCountSubject">
+          </app-number-select> -->
 
-      <app-number-select placeholder="Builds" [numberSubject]="chartBuildsCountSubject">
-      </app-number-select>
-
-      <ngx-charts-bar-vertical [scheme]="colorScheme" (window:resize)="onResize($event)"  [view]="view" [results]="chartData" [gradient]="false"
-        [xAxis]="true" [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="xAxisLabel" [tooltipDisabled]="false"
-        [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="tickFormatting" (select)="onSelect($event)">
-        <ng-template #tooltipTemplate let-model="model">
-          <span class="tooltip-label">{{model.name.indexOf( "*" ) > 0 ? model.name.substring(0, model.name.indexOf("*")) : model.name}}</span>
-          <span class="tooltip-val">{{model.value}}</span>
-        </ng-template>
-      </ngx-charts-bar-vertical>
-
-    </div>
-  </div>
+          <ngx-charts-bar-vertical [view]="view" [scheme]="colorScheme" (window:resize)="onResize($event)" [results]="chartData" [gradient]="false"
+            [xAxis]="true" [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="xAxisLabel" [tooltipDisabled]="false"
+            [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="tickFormatting" (select)="onSelect($event)">
+            <ng-template #tooltipTemplate let-model="model">
+              <span class="tooltip-label">{{model.name.indexOf( "*" ) > 0 ? model.name.substring(0, model.name.indexOf("*")) : model.name}}</span>
+              <span class="tooltip-val">{{model.value}}</span>
+            </ng-template>
+          </ngx-charts-bar-vertical>
+    
+        </div>
+      </div>
+</div>

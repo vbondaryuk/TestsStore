@@ -12,13 +12,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import { NumberSelectComponent } from 'src/app/modules/common/components/number-selects/number-select.component';
+import { FilterPipe } from './pipes/filter.pipe';
 
 @NgModule({
-    imports: [
+    imports: [        
+        NgbModule,
         CommonModule,
         FormsModule,
         BrowserAnimationsModule,
-        NgbModule,
         MatListModule,
         MatSelectModule,
         MatTableModule,
@@ -28,16 +29,18 @@ import { NumberSelectComponent } from 'src/app/modules/common/components/number-
     exports: [
         BrowserAnimationsModule,
         NgbModule,
-        MatListModule,
-        MatSelectModule,
-        MatTableModule,
-        MatInputModule,
-        MatToolbarModule,
+        // MatListModule,
+        // MatSelectModule,
+        // MatTableModule,
+        // MatInputModule,
+        // MatToolbarModule,
         NumberSelectComponent,
-        NgxChartsModule
+        NgxChartsModule,
+        FilterPipe
     ],
     declarations: [
-        NumberSelectComponent
+        NumberSelectComponent,
+        FilterPipe
     ]
 })
 

@@ -3,11 +3,6 @@
     display: inline-block;
 }
 
-.projects{
-    /*minus nav bar*/
-    height: calc(100% - 56px);
-}
-
 .mat-table {
     width: 100%;
 }
@@ -18,5 +13,4 @@
 
 .table-container {
     overflow: auto;
-    max-height: 100%
 }

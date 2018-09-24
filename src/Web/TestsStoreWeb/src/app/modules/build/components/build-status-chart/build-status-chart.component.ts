@@ -12,9 +12,11 @@ export class BuildStatusChartComponent implements OnInit {
 
   @Input()
   buildsSubject: BehaviorSubject<IBuild[]>;
+  @Input()
+  buildIdSubject: BehaviorSubject<string>;
   builds: IBuild[] = [];
   chartBuildsCountSubject = new Subject<number>();
-  chartBuildsCount: number;
+  chartBuildsCount: number = 5;
 
   ////
   chartData: any[];
@@ -25,7 +27,7 @@ export class BuildStatusChartComponent implements OnInit {
   tickFormatting;
   ////
 
-  constructor(private statusService: StatusService) { 
+  constructor(private statusService: StatusService) {
     this.tickFormatting = (series) => {
       var index = series.indexOf("*");
       if (index > 0) {
@@ -34,7 +36,6 @@ export class BuildStatusChartComponent implements OnInit {
 
       return series;
     }
-    this.resizeChart(window.innerWidth, window.innerHeight);
   }
 
   ngOnInit() {
@@ -45,10 +46,12 @@ export class BuildStatusChartComponent implements OnInit {
     this.buildsSubject.subscribe((builds: IBuild[]) => {
       this.setBuilds(builds);
     });
+
+    //this.resizeChart();
     this.setBuilds(this.buildsSubject.value);
   }
 
-  setBuilds(builds: IBuild[]){
+  setBuilds(builds: IBuild[]) {
     this.builds = builds;
     this.showChart();
   }
@@ -81,17 +84,25 @@ export class BuildStatusChartComponent implements OnInit {
   }
 
   onResize(event) {
-    this.resizeChart(event.target.innerWidth, event.target.innerHeight);
+    this.resizeChart();
   }
 
   onSelect(item: any) {
     if (item.name.indexOf("*") > 0) {
       let id = item.name.substring(item.name.indexOf("*") + 1);
-      //this.openBuildDetails(id);
+      this.buildIdSubject.next(id);
     }
   }
-  
-  resizeChart(width: number, height: number) {
-    this.view = [width * 0.25, height * 0.25];
+
+  resizeChart() {
+    let element = document.getElementsByClassName('build__status__chart')[0];
+    if (!element)
+      return;
+
+    let width = element.clientWidth - 30;
+    let height = ((window.innerHeight - 60) / 2) - 50;
+
+
+    this.view = [width, height];
   }
 }
