@@ -21,7 +21,7 @@ namespace TestsStore.Api.Models
 
 		public Project Project { get; set; }
 
-		public int Duration => EndTime == DateTime.MinValue ? 0 : EndTime.Subtract(StartTime).Seconds;
+		public int Duration => EndTime == DateTime.MinValue ? 0 : (int)EndTime.Subtract(StartTime).TotalMilliseconds;
 
 		public ICollection<TestResult> TestResults { get; set; }
 	}

@@ -36,6 +36,8 @@ namespace TestsStore.Api
 					})
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+			services.AddSwagger();
+
 			services.AddCors(options =>
 			{
 				options.AddPolicy("CorsPolicy",
@@ -60,8 +62,22 @@ namespace TestsStore.Api
 			Log.Logger = logger.CreateLogger();
 			loggerFactory.AddSerilog(Log.Logger);
 
+			var pathBase = Configuration["PATH_BASE"];
+
+			if (!string.IsNullOrEmpty(pathBase))
+			{
+				loggerFactory.CreateLogger("init").LogDebug($"Using PATH BASE '{pathBase}'");
+				app.UsePathBase(pathBase);
+			}
+
 			app.UseCors("CorsPolicy");
 			app.UseMvc();
+			app.UseMvcWithDefaultRoute();
+			app.UseSwagger()
+				.UseSwaggerUI(c =>
+				{
+					c.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Catalog.API V1");
+				});
 		}
 	}
 
@@ -87,5 +103,22 @@ namespace TestsStore.Api
 			return services;
 		}
 
+		public static IServiceCollection AddSwagger(this IServiceCollection services)
+		{
+			services.AddSwaggerGen(options =>
+			{
+				options.DescribeAllEnumsAsStrings();
+				options.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
+				{
+					Title = "Test store service API",
+					Version = "v1",
+					Description = "The test store service.",
+					TermsOfService = "Terms Of Service"
+				});
+			});
+
+			return services;
+
+		}
 	}
 }

@@ -18,7 +18,7 @@ namespace TestsStore.Api.ViewModels
 
 		public List<TestsSummaryViewModel> TestsSummary { get; }
 
-		public int Duration => EndTime == DateTime.MinValue ? 0 : EndTime.Subtract(StartTime).Seconds;
+		public long Duration => EndTime == DateTime.MinValue ? 0 : (long)EndTime.Subtract(StartTime).TotalMilliseconds;
 
 		public BuildDetailsViewModel(Build build, List<TestsSummaryViewModel> testsSummary)
 		{

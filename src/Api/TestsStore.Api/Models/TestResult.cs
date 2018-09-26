@@ -14,7 +14,7 @@ namespace TestsStore.Api.Models
 
 		public Build Build { get; set; }
 
-		public TimeSpan Duration { get; set; }
+		public int Duration { get; set; }
 
 		public Guid StatusId { get; set; }
 

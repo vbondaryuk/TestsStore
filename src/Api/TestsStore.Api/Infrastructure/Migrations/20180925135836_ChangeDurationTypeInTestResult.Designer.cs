@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestsStore.Api.Infrastructure;
 
 namespace TestsStore.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(TestsStoreContext))]
-    partial class TestsStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20180925135836_ChangeDurationTypeInTestResult")]
+    partial class ChangeDurationTypeInTestResult
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
