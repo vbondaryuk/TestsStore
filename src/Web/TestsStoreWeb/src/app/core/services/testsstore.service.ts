@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { IBuild } from "../models/build";
 import { IBuildDetails } from "src/app/core/models/buildDetails";
 import { ITestResult } from "../models/testResult";
+import { IPaginatedItems } from "../models/paginatedItems";
 
 @Injectable({ providedIn: 'root' })
 export class TestsStoreService {
@@ -17,10 +18,7 @@ export class TestsStoreService {
 
     getProjects(): Observable<IProject[]> {
         return this.http.get<IProject[]>(this.baseUrl + "project/items")
-            .pipe(
-                tap(projects => console.log('fetched projects')),
-                catchError(this.handleError('getProjects', []))
-            );
+            .pipe(catchError(this.handleError('getProjects', [])));
     }
 
     getBuilds(projectId: string): Observable<IBuild[]> {
@@ -32,10 +30,23 @@ export class TestsStoreService {
         return this.http.get<IBuildDetails>(this.baseUrl + "build/id/" + buildId + "/details")
             .pipe(catchError(this.handleError('getBuilds', null)));
     }
-    
-    getTestResults(buildId: string): Observable<ITestResult[]> {
-        return this.http.get<ITestResult[]>(this.baseUrl + "testresult/items/build/" + buildId)
+
+    getTestStatistic(testId: string): Observable<ITestResult[]> {
+        return this.http.get<ITestResult[]>(
+            `${this.baseUrl}testresult/items/test/${testId}/statistic`)
             .pipe(catchError(this.handleError('getBuilds', [])));
+    }
+    
+    getTestResults(
+        buildId: string,
+        filter:string,
+        sortDirection:string, 
+        pageSize: number, 
+        pageIndex: number
+    ): Observable<IPaginatedItems<ITestResult>> {
+        return this.http.get<IPaginatedItems<ITestResult>>(
+            `${this.baseUrl}testresult/items/build/${buildId}?filter=${filter}&pageSize=${pageSize}&pageIndex=${pageIndex}`)
+            .pipe(catchError(this.handleError('getBuilds', null)));
     }
 
 

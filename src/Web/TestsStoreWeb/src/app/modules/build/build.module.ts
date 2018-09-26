@@ -9,13 +9,15 @@ import { BuildStatusChartComponent } from './components/build-status-chart/build
 import { CommonAppModule } from 'src/app/modules/common/common.module';
 import { BuildShortDetailsComponent } from 'src/app/modules/build/components/build-short-details/build-short-details.component';
 import { BuildListComponent } from 'src/app/modules/build/components/build-list/build-list.component';
+import { TestModule } from '../test/test.module';
 
 @NgModule({
   imports: [
     CommonModule,
     CommonAppModule,
     FormsModule,
-    RouterModule
+    RouterModule,
+    TestModule
   ],
   exports: [
     BuildsComponent,

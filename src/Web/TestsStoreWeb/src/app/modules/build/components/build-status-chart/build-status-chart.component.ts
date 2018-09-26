@@ -47,7 +47,7 @@ export class BuildStatusChartComponent implements OnInit {
       this.setBuilds(builds);
     });
 
-    //this.resizeChart();
+    this.resizeChart();
     this.setBuilds(this.buildsSubject.value);
   }
 

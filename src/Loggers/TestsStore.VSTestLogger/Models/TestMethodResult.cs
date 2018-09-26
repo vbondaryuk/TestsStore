@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace TestsStore.VS.TestLogger.Models
@@ -32,9 +33,9 @@ namespace TestsStore.VS.TestLogger.Models
 			ClassName = testResult.TestCase.FullyQualifiedName.Substring(0, testResult.TestCase.FullyQualifiedName.LastIndexOf('.'));
 			Duration = testResult.Duration;
 			Status = RetrieveOutcome(testResult);
-			Messages = string.Join(Environment.NewLine, testResult.Messages.Select(x => x.Text));
-			ErrorMessage = testResult.ErrorMessage;
-			StackTrace = testResult.ErrorStackTrace;
+			Messages = WebUtility.HtmlEncode(string.Join(Environment.NewLine, testResult.Messages.Select(x => x.Text)));
+			ErrorMessage = WebUtility.HtmlEncode(testResult.ErrorMessage);
+			StackTrace = WebUtility.HtmlEncode(testResult.ErrorStackTrace);
 		}
 
 		private string RetrieveOutcome(TestResult testResult)

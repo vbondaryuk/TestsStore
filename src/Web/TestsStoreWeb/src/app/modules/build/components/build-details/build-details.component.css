@@ -1,0 +1,45 @@
+tr.testresult-detail-row {
+  height: 0;
+}
+
+tr.testresult-row:not(.testresult-expanded-row):hover {
+  background: #f5f5f5;
+}
+
+tr.testresult-row:not(.testresult-expanded-row):active {
+  background: #efefef;
+}
+
+.testresult-row td {
+  border-bottom-width: 0;
+}
+
+.testresult-detail {
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+}
+
+.testresult-detail__name {
+  width: 110px;
+}
+
+.build-details__tests-cart, .build-details {
+  display: inline-block;
+}
+
+.test-results-list {
+  display: block;
+}
+
+.build-details .card-body {
+  width: 400px;
+  height: 200px;
+}
+
+.build-details__tests-cart .card-body {
+  width: 700px;
+  height: 200px;
+}

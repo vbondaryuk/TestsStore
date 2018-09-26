@@ -1,3 +1,37 @@
-<p>
-  test-details works!
-</p>
+<ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">{{testResult.test.name}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <ngx-charts-bar-vertical [view]="view" [scheme]="colorScheme" [results]="chartData" [gradient]="false"
+        [xAxis]="true" [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="xAxisLabel" [tooltipDisabled]="false"
+        [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="tickFormatting" (select)="onSelect($event)">
+        <ng-template #tooltipTemplate let-model="model">
+          <span class="tooltip-label">{{model.name.indexOf( "*" ) > 0 ? model.name.substring(0, model.name.indexOf("*")) : model.name}}</span>
+          <span class="tooltip-val">{{model.value}}</span>
+        </ng-template>
+      </ngx-charts-bar-vertical>
+
+        <table>
+            <tbody>
+                <tr><td class="testresult-detail__name">Class name</td><td>{{testResult.test.className}}</td></tr>
+                <tr><td class="testresult-detail__name">Name</td><td>{{testResult.test.name}}</td></tr>
+                <tr><td class="testresult-detail__name">Status</td><td>{{testResult.status.name}}</td></tr>
+                <tr><td class="testresult-detail__name">Duration</td><td>{{testResult.duration / 1000 | number : '1.2-2' }} sec</td></tr>
+                <tr *ngIf="testResult.message"><td class="testresult-detail__name">Message</td><td>{{testResult.message}}</td></tr>
+                <tr *ngIf="testResult.stackTrace"><td class="testresult-detail__name">Srtack trace</td><td>{{testResult.stackTrace}}</td></tr>
+                <tr *ngIf="testResult.errorMessage"><td class="testresult-detail__name">Error message</td><td>{{testResult.errorMessage}}</td></tr>
+              </tbody>
+        </table>
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+    </div>
+  </ng-template>
+
+<button class="btn btn-sm btn-secondary" (click)="open(content)">Test history</button>

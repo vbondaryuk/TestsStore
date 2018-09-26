@@ -1,0 +1,14 @@
+@media screen {
+    .modal-adaptive .modal-lg {
+        width: 80% !important;
+        max-width: calc(80%);
+    }
+}
+
+.modal-dialog{
+    font-size: 14px;
+}
+
+.testresult-detail__name{
+    width: 110px;
+}

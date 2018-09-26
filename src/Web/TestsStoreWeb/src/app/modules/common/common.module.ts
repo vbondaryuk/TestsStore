@@ -4,18 +4,20 @@ import { CommonModule } from '@angular/common';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import { NumberSelectComponent } from 'src/app/modules/common/components/number-selects/number-select.component';
 import { FilterPipe } from './pipes/filter.pipe';
 
 @NgModule({
-    imports: [        
+    imports: [
         NgbModule,
         CommonModule,
         FormsModule,
@@ -24,19 +26,23 @@ import { FilterPipe } from './pipes/filter.pipe';
         MatSelectModule,
         MatTableModule,
         MatInputModule,
-        MatToolbarModule
+        MatToolbarModule,
+        MatPaginatorModule,
+        MatProgressSpinnerModule
     ],
     exports: [
         BrowserAnimationsModule,
         NgbModule,
-        // MatListModule,
-        // MatSelectModule,
-        // MatTableModule,
-        // MatInputModule,
-        // MatToolbarModule,
+        MatListModule,
+        MatSelectModule,
+        MatTableModule,
+        MatInputModule,
+        MatToolbarModule,
         NumberSelectComponent,
         NgxChartsModule,
-        FilterPipe
+        FilterPipe,
+        MatPaginatorModule,
+        MatProgressSpinnerModule
     ],
     declarations: [
         NumberSelectComponent,
