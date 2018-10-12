@@ -26,10 +26,13 @@ namespace TestsStore.Api.Controllers
 			var test = await testsStoreContext.Tests
 				.FirstOrDefaultAsync(x => x.Id == id);
 
+			if (test == null)
+				return NotFound();
+
 			return Ok(test);
 		}
 
-		// GET test/id/guid
+		// GET test/project/guid
 		[HttpGet]
 		[Route("project/{projectId:Guid}")]
 		public async Task<IActionResult> GetByProject(Guid projectId)

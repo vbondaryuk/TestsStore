@@ -2,7 +2,7 @@
 
 namespace TestsStore.Api.CommandModels
 {
-	public class TestReslutCommandModel
+	public class TestResultCommandModel
 	{
 		public Guid BuildId { get; set; }
 

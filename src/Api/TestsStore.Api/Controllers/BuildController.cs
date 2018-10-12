@@ -29,6 +29,11 @@ namespace TestsStore.Api.Controllers
 				.Include(x => x.Status)
 				.FirstOrDefaultAsync(x => x.Id == id);
 
+			if (build == null)
+			{
+				return NotFound();
+			}
+
 			return Ok(build);
 		}
 
@@ -55,6 +60,7 @@ namespace TestsStore.Api.Controllers
 				Status = Enumeration.FromValue<Status>(x.StatusId).Name,
 				Count = x.Count
 			}).ToList();
+
 			var buildDetailsViewModel = new BuildDetailsViewModel(build, testsSummaryViewModels);
 
 			return Ok(buildDetailsViewModel);

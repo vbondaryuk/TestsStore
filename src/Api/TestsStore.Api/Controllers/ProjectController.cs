@@ -25,7 +25,8 @@ namespace TestsStore.Api.Controllers
 		public async Task<IActionResult> Get()
 		{
 			var projects = await testsStoreContext.Projects
-				.OrderBy(x => x.Name).ToListAsync();
+				.OrderBy(x => x.Name)
+				.ToListAsync();
 
 			return Ok(projects);
 		}
@@ -38,6 +39,11 @@ namespace TestsStore.Api.Controllers
 			var project = await testsStoreContext.Projects
 				.FirstOrDefaultAsync(x => x.Id == id);
 
+			if (project == null)
+			{
+				return NotFound();
+			}
+
 			return Ok(project);
 		}
 
@@ -48,6 +54,11 @@ namespace TestsStore.Api.Controllers
 		{
 			var project = await testsStoreContext.Projects
 				.FirstOrDefaultAsync(x => x.Name == name);
+
+			if (project == null)
+			{
+				return NotFound();
+			}
 
 			return Ok(project);
 		}

@@ -85,9 +85,9 @@ namespace TestsStore.Api.Controllers
 		//Post testresult/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<ActionResult<List<TestResult>>> CreateTestResult([FromBody]TestReslutCommandModel testReslutCommandModel)
+		public async Task<ActionResult<List<TestResult>>> CreateTestResult([FromBody]TestResultCommandModel testResultCommandModel)
 		{
-			var testResultForInsert = await HandleAddCommand(testReslutCommandModel);
+			var testResultForInsert = await HandleAddCommand(testResultCommandModel);
 
 			var projectEntry = await testsStoreContext.TestResults.AddAsync(testResultForInsert);
 			await testsStoreContext.SaveChangesAsync();
@@ -96,37 +96,40 @@ namespace TestsStore.Api.Controllers
 			return Ok(testResult);
 		}
 
-		private async Task<TestResult> HandleAddCommand(TestReslutCommandModel testReslutQueryModel)
+		private async Task<TestResult> HandleAddCommand(TestResultCommandModel testResultQueryModel)
 		{
-			var status = Enumeration.FromDisplayName<Status>(testReslutQueryModel.Status);
-			var test = await GetOrCreateTestAsync(testReslutQueryModel);
+			var status = Enumeration.FromDisplayName<Status>(testResultQueryModel.Status);
+			var test = await GetOrCreateTestAsync(testResultQueryModel);
 
 			return new TestResult
 			{
 				Id = Guid.NewGuid(),
 				TestId = test.Id,
-				BuildId = testReslutQueryModel.BuildId,
-				Duration = testReslutQueryModel.Duration.Milliseconds,
+				BuildId = testResultQueryModel.BuildId,
+				Duration = testResultQueryModel.Duration.Milliseconds,
 				StatusId = status.Id,
-				Messages = testReslutQueryModel.Messages,
-				StackTrace = testReslutQueryModel.StackTrace,
-				ErrorMessage = testReslutQueryModel.ErrorMessage
+				Messages = testResultQueryModel.Messages,
+				StackTrace = testResultQueryModel.StackTrace,
+				ErrorMessage = testResultQueryModel.ErrorMessage
 			};
 		}
 
-		private async Task<Test> GetOrCreateTestAsync(TestReslutCommandModel testReslutQueryModel)
+		private async Task<Test> GetOrCreateTestAsync(TestResultCommandModel testResultQueryModel)
 		{
 			var test = await testsStoreContext.Tests
-				.FirstOrDefaultAsync(x => x.Name == testReslutQueryModel.Name && x.ClassName == testReslutQueryModel.ClassName);
+				.FirstOrDefaultAsync(x =>
+					x.Name == testResultQueryModel.Name && 
+					x.ClassName == testResultQueryModel.ClassName &&
+					x.ProjectId == testResultQueryModel.ProjectId);
 
 			if (test == null)
 			{
 				test = new Test
 				{
 					Id = Guid.NewGuid(),
-					Name = testReslutQueryModel.Name,
-					ClassName = testReslutQueryModel.ClassName,
-					ProjectId = testReslutQueryModel.ProjectId
+					Name = testResultQueryModel.Name,
+					ClassName = testResultQueryModel.ClassName,
+					ProjectId = testResultQueryModel.ProjectId
 				};
 				await testsStoreContext.Tests.AddAsync(test);
 			}

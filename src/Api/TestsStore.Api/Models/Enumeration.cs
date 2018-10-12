@@ -7,8 +7,8 @@ namespace TestsStore.Api.Models
 {
 	public abstract class Enumeration : IComparable
 	{
-		public string Name { get; private set; }
 		public Guid Id { get; private set; }
+		public string Name { get; private set; }
 
 		protected Enumeration() { }
 
@@ -61,7 +61,7 @@ namespace TestsStore.Api.Models
 			return matchingItem;
 		}
 
-		private static T Parse<T, K>(K value, string description, Func<T, bool> predicate) where T : Enumeration
+		private static T Parse<T, TValue>(TValue value, string description, Func<T, bool> predicate) where T : Enumeration
 		{
 			var matchingItem = GetAll<T>().FirstOrDefault(predicate);
 

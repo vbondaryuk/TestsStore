@@ -71,7 +71,6 @@ namespace TestsStore.Api
 			}
 
 			app.UseCors("CorsPolicy");
-			app.UseMvc();
 			app.UseMvcWithDefaultRoute();
 			app.UseSwagger()
 				.UseSwaggerUI(c =>
