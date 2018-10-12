@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
-import { Subject, BehaviorSubject } from 'rxjs';
-import { IBuild } from 'src/app/core/models/build';
+import {Component, OnInit, Input, HostListener} from '@angular/core';
+import {Subject, BehaviorSubject} from 'rxjs';
+import {IBuild} from 'src/app/core/models/build';
 
 @Component({
   selector: 'app-builds',
@@ -18,7 +18,8 @@ export class BuildsComponent implements OnInit {
 
   halfHeight: number;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
     //this.onResize();
@@ -26,9 +27,8 @@ export class BuildsComponent implements OnInit {
 
   @HostListener('window:resize')
   onResize() {
-    let navbarElement = document.getElementsByClassName('navbar')[0];
-    
-    this.halfHeight = (window.innerHeight - navbarElement.clientHeight)  / 2;
+    const navbarElement = document.getElementsByClassName('navbar')[0];
+
+    this.halfHeight = (window.innerHeight - navbarElement.clientHeight) / 2;
   }
-  
 }

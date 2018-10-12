@@ -12,3 +12,13 @@
 .testresult-detail__name{
     width: 110px;
 }
+
+.testresult__details tbody{
+    display: block;
+    max-height: 600px;
+    overflow: auto;
+}
+
+.testresult-details__result{
+    word-break: break-word;
+}

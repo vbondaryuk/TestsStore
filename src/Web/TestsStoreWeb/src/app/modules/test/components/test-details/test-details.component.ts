@@ -63,6 +63,7 @@ export class TestDetailsComponent implements OnInit {
           this.chartData.push(keyVal);
           this.colorScheme.domain.push(this.statusService.getColor(testResult.status));
         });
+        this.testResult = testResults.find(x=>x.id == this.testResult.id);
       });
   }
 
