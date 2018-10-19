@@ -11,12 +11,11 @@ namespace TestsStore.Api.FunctionalTests
 	[TestClass]
 	public class TestStoreTests
 	{
-		private readonly WebApplicationFactory<Startup> factory;
 		private readonly HttpClient client;
 
 		public TestStoreTests()
 		{
-			factory = new CustomWebApplicationFactory<Startup>();
+			var factory = new CustomWebApplicationFactory<Startup>();
 			client = factory.CreateClient(new WebApplicationFactoryClientOptions
 			{
 				AllowAutoRedirect = false

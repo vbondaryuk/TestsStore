@@ -16,11 +16,11 @@ namespace TestsStore.Api.ViewModels
 
 		public DateTime EndTime { get; }
 
-		public List<TestsSummaryViewModel> TestsSummary { get; }
+		public List<TestResultsSummaryViewModel> TestsSummary { get; }
 
 		public long Duration => EndTime == DateTime.MinValue ? 0 : (long)EndTime.Subtract(StartTime).TotalMilliseconds;
 
-		public BuildDetailsViewModel(Build build, List<TestsSummaryViewModel> testsSummary)
+		public BuildDetailsViewModel(Build build, List<TestResultsSummaryViewModel> testsSummary)
 		{
 			Id = build.Id;
 			Name = build.Name;

@@ -40,13 +40,16 @@ namespace TestsStore.Api.Controllers
 		// GET build/id/guid/details
 		[HttpGet]
 		[Route("id/{id:Guid}/details")]
-		public async Task<IActionResult> GetDetails(Guid id)
+		public async Task<IActionResult> GetDetails(Guid id)//TODO remove should be skipped to build and testresult get summary
 		{
 			var build = await testsStoreContext.Builds
 				.Include(x => x.Status)
 				.FirstOrDefaultAsync(x => x.Id == id);
 
-			var buildDetails = await testsStoreContext.TestResults
+			if (build == null)
+				return NotFound();
+
+			var testStatistic = await testsStoreContext.TestResults
 				.Where(x => x.BuildId == id)
 				.GroupBy(x => x.StatusId)
 				.Select(x => new
@@ -55,7 +58,7 @@ namespace TestsStore.Api.Controllers
 					Count = x.Count()
 				}).ToListAsync();
 
-			var testsSummaryViewModels = buildDetails.Select(x => new TestsSummaryViewModel
+			var testsSummaryViewModels = testStatistic.Select(x => new TestResultsSummaryViewModel
 			{
 				Status = Enumeration.FromValue<Status>(x.StatusId).Name,
 				Count = x.Count
@@ -85,12 +88,9 @@ namespace TestsStore.Api.Controllers
 		[Route("items")]
 		public async Task<IActionResult> CreateBuild([FromBody]BuildCommandModel buildCommandModel)
 		{
-			var build = HandleAddCommand(buildCommandModel);
+			Build build = await HandleAddCommandAsync(buildCommandModel);
 
-			await testsStoreContext.Builds.AddAsync(build);
-			await testsStoreContext.SaveChangesAsync();
-
-			return Ok(build);
+			return CreatedAtAction(nameof(CreateBuild), build);
 		}
 
 		//Put build/items
@@ -98,37 +98,32 @@ namespace TestsStore.Api.Controllers
 		[Route("items")]
 		public async Task<IActionResult> UpdateBuild([FromBody]BuildCommandModel buildCommandModel)
 		{
-			var build = await testsStoreContext.Builds
-				.FirstOrDefaultAsync(x => x.Id == buildCommandModel.Id);
-
-			HandleUpdateCommand(build, buildCommandModel);
-
-			testsStoreContext.Builds.Update(build);
-			await testsStoreContext.SaveChangesAsync();
+			Build build = await  HandleUpdateCommandAsync(buildCommandModel);
 
 			return Ok(build);
 		}
 
-		private static Build HandleAddCommand(BuildCommandModel buildCommandModel)
+		private async Task<Build> HandleAddCommandAsync(BuildCommandModel buildCommandModel)
 		{
-			var status = Enumeration.FromDisplayName<Status>(buildCommandModel.Status);
-			var build = new Build
-			{
-				Id = Guid.NewGuid(),
-				ProjectId = buildCommandModel.ProjectId,
-				Name = buildCommandModel.Name,
-				StatusId = status.Id,
-				StartTime = buildCommandModel.StartTime,
-				EndTime = buildCommandModel.EndTime
-			};
+			Build build = buildCommandModel.ToBuild();
+
+			await testsStoreContext.Builds.AddAsync(build);
+			await testsStoreContext.SaveChangesAsync();
+
 			return build;
 		}
 
-		private static Build HandleUpdateCommand(Build build, BuildCommandModel buildCommandModel)
+		private async Task<Build> HandleUpdateCommandAsync(BuildCommandModel buildCommandModel)
 		{
+			var build = await testsStoreContext.Builds
+				.FirstOrDefaultAsync(x => x.Id == buildCommandModel.Id);
+
 			var status = Enumeration.FromDisplayName<Status>(buildCommandModel.Status);
 			build.EndTime = buildCommandModel.EndTime;
 			build.StatusId = status.Id;
+
+			testsStoreContext.Builds.Update(build);
+			await testsStoreContext.SaveChangesAsync();
 
 			return build;
 		}

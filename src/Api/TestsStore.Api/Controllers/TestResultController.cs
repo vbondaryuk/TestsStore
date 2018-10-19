@@ -82,10 +82,32 @@ namespace TestsStore.Api.Controllers
 			return Ok(testResults);
 		}
 
+		[HttpGet]
+		[Route("testresult/summary/build/{buildId:Guid}")]
+		private async Task<ActionResult<IEnumerable<TestResultsSummaryViewModel>>> GetTestsResultsSummary(Guid buildId)
+		{
+			var testStatistic = await testsStoreContext.TestResults
+				.Where(x => x.BuildId == buildId)
+				.GroupBy(x => x.StatusId)
+				.Select(x => new
+				{
+					StatusId = x.Key,
+					Count = x.Count()
+				}).ToListAsync();
+
+			var testResultsSummaryViewModels = testStatistic.Select(x => new TestResultsSummaryViewModel
+			{
+				Status = Enumeration.FromValue<Status>(x.StatusId).Name,
+				Count = x.Count
+			}).ToList();
+
+			return Ok(testResultsSummaryViewModels);
+		}
+
 		//Post testresult/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<ActionResult<List<TestResult>>> CreateTestResult([FromBody]TestResultCommandModel testResultCommandModel)
+		public async Task<ActionResult<IEnumerable<TestResult>>> CreateTestResult([FromBody]TestResultCommandModel testResultCommandModel)
 		{
 			var testResultForInsert = await HandleAddCommand(testResultCommandModel);
 

@@ -56,9 +56,7 @@ namespace TestsStore.Api.Controllers
 				.FirstOrDefaultAsync(x => x.Name == name);
 
 			if (project == null)
-			{
 				return NotFound();
-			}
 
 			return Ok(project);
 		}
@@ -68,18 +66,18 @@ namespace TestsStore.Api.Controllers
 		[Route("items")]
 		public async Task<IActionResult> CreateProject([FromBody]Project projectForInsert)
 		{
-			var project = await testsStoreContext.Projects
+			Project project = await testsStoreContext.Projects
 				.FirstOrDefaultAsync(x => x.Name == projectForInsert.Name);
 
-			if (project == null)
-			{
-				project = new Project(projectForInsert.Name);
-				var projectEntry = await testsStoreContext.Projects.AddAsync(project);
-				await testsStoreContext.SaveChangesAsync();
-				project = projectEntry.Entity;
-			}
+			if (project != null)
+				return Ok(project);
 
-			return Ok(project);
+			projectForInsert.Id = Guid.NewGuid();
+
+			await testsStoreContext.Projects.AddAsync(projectForInsert);
+			await testsStoreContext.SaveChangesAsync();
+
+			return CreatedAtAction(nameof(CreateProject), projectForInsert);
 		}
 	}
 }
