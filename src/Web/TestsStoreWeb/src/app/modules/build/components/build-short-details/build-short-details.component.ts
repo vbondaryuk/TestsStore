@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { TestsStoreService } from 'src/app/core/services/testsstore.service';
-import { IBuildDetails } from 'src/app/core/models/buildDetails';
-import { StatusService } from 'src/app/core/services/status.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
+import {TestsStoreService} from 'src/app/core/services/testsstore.service';
+import {IBuildDetails} from 'src/app/core/models/buildDetails';
+import {StatusService} from 'src/app/core/services/status.service';
 
 @Component({
   selector: 'app-build-short-details',
@@ -37,19 +37,19 @@ export class BuildShortDetailsComponent implements OnInit {
         return;
       }
 
-      if (this.buildId == buildId) {
+      if (this.buildId === buildId) {
         return;
       }
 
       this.buildId = buildId;
-      this.clearChart(); 
-      
+      this.clearChart();
+
       this.testsStoreService.getBuildDetails(this.buildId)
-        .subscribe(buildDetals => {
-          this.buildDetails = buildDetals;
+        .subscribe(buildDetails => {
+          this.buildDetails = buildDetails;
           this.showChart();
         });
-    })
+    });
   }
 
   onSelect(event) {
@@ -64,7 +64,7 @@ export class BuildShortDetailsComponent implements OnInit {
   showChart() {
     this.clearChart();
 
-    if (this.buildDetails.testsSummary.length == 0) {
+    if (this.buildDetails.testsSummary.length === 0) {
       return;
     }
 

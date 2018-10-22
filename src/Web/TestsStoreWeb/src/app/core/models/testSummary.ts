@@ -1,4 +1,4 @@
 export interface ITestsSummary {
-    status: string;
-    count: number;
+  status: string;
+  count: number;
 }

@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
-import { TestsStoreService } from 'src/app/core/services/testsstore.service';
-import { MatTableDataSource } from '@angular/material';
-import { IBuild } from 'src/app/core/models/build';
-import { Subject, BehaviorSubject } from 'rxjs';
-import { StatusService } from 'src/app/core/services/status.service';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {TestsStoreService} from 'src/app/core/services/testsstore.service';
+import {MatTableDataSource} from '@angular/material';
+import {IBuild} from 'src/app/core/models/build';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {StatusService} from 'src/app/core/services/status.service';
 
 @Component({
   selector: 'app-build-list',
@@ -32,7 +32,8 @@ export class BuildListComponent implements OnInit {
   constructor(
     private testsStoreService: TestsStoreService,
     private statusService: StatusService) {
-    this.dataSource.filterPredicate = (data: IBuild, filter: string) => data.name.toLowerCase().indexOf(filter) != -1 || data.status.name.toLowerCase().indexOf(filter) != -1;
+    this.dataSource.filterPredicate = (data: IBuild, filter: string) =>
+      data.name.toLowerCase().indexOf(filter) !== -1 || data.status.name.toLowerCase().indexOf(filter) !== -1;
   }
 
   ngOnInit() {
@@ -46,9 +47,9 @@ export class BuildListComponent implements OnInit {
 
   @HostListener('window:resize')
   onResize() {
-    let navbarElement = document.getElementsByClassName('navbar')[0];
-    let buildListHeaderElement = document.getElementsByClassName('build-list__header')[0];
-    let buildListFilterElement = document.getElementsByClassName('build-list__filter')[0];
+    const navbarElement = document.getElementsByClassName('navbar')[0];
+    const buildListHeaderElement = document.getElementsByClassName('build-list__header')[0];
+    const buildListFilterElement = document.getElementsByClassName('build-list__filter')[0];
 
     this.tableContainerHeight = window.innerHeight - navbarElement.clientHeight - buildListHeaderElement.clientHeight - buildListFilterElement.clientHeight - 55;
   }
@@ -67,7 +68,6 @@ export class BuildListComponent implements OnInit {
   }
 
   openBuildDetails(id: string) {
-    //this.router.navigate(['build/' + id]);    
     this.buildIdSubject.next(id);
   }
 

@@ -1,4 +1,4 @@
-export interface IEntity{
-    id: string;
-    name: string;
+export interface IEntity {
+  id: string;
+  name: string;
 }

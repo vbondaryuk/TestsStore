@@ -22,7 +22,6 @@ export class BuildsComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.onResize();
   }
 
   @HostListener('window:resize')

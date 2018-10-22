@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Subject, BehaviorSubject } from 'rxjs';
-import { IBuild } from 'src/app/core/models/build';
-import { StatusService } from 'src/app/core/services/status.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {IBuild} from 'src/app/core/models/build';
+import {StatusService} from 'src/app/core/services/status.service';
 
 @Component({
   selector: 'app-build-status-chart',
@@ -16,26 +16,27 @@ export class BuildStatusChartComponent implements OnInit {
   buildIdSubject: BehaviorSubject<string>;
   builds: IBuild[] = [];
   chartBuildsCountSubject = new Subject<number>();
-  chartBuildsCount: number = 5;
+  chartBuildsCount = 5;
 
   ////
   chartData: any[];
   view: any[] = [];
   xAxisLabel = 'Builds';
   yAxisLabel = 'Duration in seconds';
-  colorScheme = { domain: [] };
+  colorScheme = {domain: []};
   tickFormatting;
+
   ////
 
   constructor(private statusService: StatusService) {
     this.tickFormatting = (series) => {
-      var index = series.indexOf("*");
+      const index = series.indexOf('*');
       if (index > 0) {
         return series.substring(0, index);
       }
 
       return series;
-    }
+    };
   }
 
   ngOnInit() {
@@ -60,7 +61,7 @@ export class BuildStatusChartComponent implements OnInit {
     this.chartData = [];
     this.colorScheme.domain = [];
 
-    if (this.builds.length == 0) {
+    if (this.builds.length === 0) {
       return;
     }
 
@@ -69,9 +70,9 @@ export class BuildStatusChartComponent implements OnInit {
         break;
       }
 
-      let build = this.builds[i];
+      const build = this.builds[i];
       const keyVal = {
-        name: build.name + "*" + build.id,
+        name: build.name + '*' + build.id,
         value: build.duration
       };
       this.chartData.push(keyVal);
@@ -88,19 +89,20 @@ export class BuildStatusChartComponent implements OnInit {
   }
 
   onSelect(item: any) {
-    if (item.name.indexOf("*") > 0) {
-      let id = item.name.substring(item.name.indexOf("*") + 1);
+    if (item.name.indexOf('*') > 0) {
+      const id = item.name.substring(item.name.indexOf('*') + 1);
       this.buildIdSubject.next(id);
     }
   }
 
   resizeChart() {
-    let element = document.getElementsByClassName('build__status__chart')[0];
-    if (!element)
+    const element = document.getElementsByClassName('build__status__chart')[0];
+    if (!element) {
       return;
+    }
 
-    let width = element.clientWidth - 30;
-    let height = ((window.innerHeight - 60) / 2) - 50;
+    const width = element.clientWidth - 30;
+    const height = ((window.innerHeight - 60) / 2) - 50;
 
 
     this.view = [width, height];

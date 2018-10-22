@@ -1,4 +1,4 @@
-import { IEntity } from "./entity";
+import {IEntity} from './entity';
 
-export interface IProject extends IEntity  {
+export interface IProject extends IEntity {
 }

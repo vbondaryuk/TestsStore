@@ -9,26 +9,28 @@
     <div class="card-body">
       <table>
         <tbody>
-          <tr>
-            <td class="testresult-detail__name">Name</td>
-            <td>{{ buildDetails.name}} </td>
-          </tr>
-          <tr>
-            <td class="testresult-detail__name">Status</td>
-            <td class="text-white text-center" [style.background-color]='getBackgroundColor(buildDetails.status)'>{{buildDetails.status}}</td>
-          </tr>
-          <tr>
-            <td class="testresult-detail__name">Duration</td>
-            <td>{{buildDetails.duration / 1000 | number : '1.2-2' }} sec</td>
-          </tr>
-          <tr>
-            <td class="testresult-detail__name">Start time</td>
-            <td>{{buildDetails.startTime | date:'M/d/yy, h:mm:ss a'}}</td>
-          </tr>
-          <tr>
-            <td class="testresult-detail__name">End time</td>
-            <td>{{buildDetails.endTime | date:'M/d/yy, h:mm:ss a'}}</td>
-          </tr>
+        <tr>
+          <td class="testresult-detail__name">Name</td>
+          <td>{{buildDetails.name}}</td>
+        </tr>
+        <tr>
+          <td class="testresult-detail__name">Status</td>
+          <td class="text-white text-center" [style.background-color]='getBackgroundColor(buildDetails.status)'>
+            {{buildDetails.status}}
+          </td>
+        </tr>
+        <tr>
+          <td class="testresult-detail__name">Duration</td>
+          <td>{{buildDetails.duration / 1000 | number : '1.2-2' }} sec</td>
+        </tr>
+        <tr>
+          <td class="testresult-detail__name">Start time</td>
+          <td>{{buildDetails.startTime | date:'M/d/yy, h:mm:ss a'}}</td>
+        </tr>
+        <tr>
+          <td class="testresult-detail__name">End time</td>
+          <td>{{buildDetails.endTime | date:'M/d/yy, h:mm:ss a'}}</td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -74,19 +76,21 @@
         <table mat-table [dataSource]="dataSource" multiTemplateDataRows>
 
           <ng-container matColumnDef="className">
-            <th mat-header-cell *matHeaderCellDef> Class name </th>
-            <td mat-cell *matCellDef="let item"> {{item.test.className}} </td>
+            <th mat-header-cell *matHeaderCellDef> Class name</th>
+            <td mat-cell *matCellDef="let item"> {{item.test.className}}</td>
           </ng-container>
 
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef> Name </th>
-            <td mat-cell *matCellDef="let item"> {{item.test.name}} </td>
+            <th mat-header-cell *matHeaderCellDef> Name</th>
+            <td mat-cell *matCellDef="let item"> {{item.test.name}}</td>
           </ng-container>
 
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef> Status </th>
-            <td mat-cell *matCellDef="let item" class="text-white text-center" [style.background-color]='getBackgroundColor(item.status.name)'>
-            {{item.status.name}} </td>
+            <th mat-header-cell *matHeaderCellDef> Status</th>
+            <td mat-cell *matCellDef="let item" class="text-white text-center"
+                [style.background-color]='getBackgroundColor(item.status.name)'>
+              {{item.status.name}}
+            </td>
           </ng-container>
 
           <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
@@ -97,34 +101,34 @@
                 <div class="testresult-diagram">
                   <table>
                     <tbody>
-                      <tr>
-                        <td class="testresult-detail__name">Class name</td>
-                        <td>{{item.test.className}}</td>
-                      </tr>
-                      <tr>
-                        <td class="testresult-detail__name">Name</td>
-                        <td>{{item.test.name}}</td>
-                      </tr>
-                      <tr>
-                        <td class="testresult-detail__name">Status</td>
-                        <td>{{item.status.name}}</td>
-                      </tr>
-                      <tr>
-                        <td class="testresult-detail__name">Duration</td>
-                        <td>{{item.duration / 1000 | number : '1.2-2' }} sec</td>
-                      </tr>
-                      <tr *ngIf="item.message">
-                        <td class="testresult-detail__name">Message</td>
-                        <td>{{item.message}}</td>
-                      </tr>
-                      <tr *ngIf="item.stackTrace">
-                        <td class="testresult-detail__name">Stack trace</td>
-                        <td>{{item.stackTrace}}</td>
-                      </tr>
-                      <tr *ngIf="item.errorMessage">
-                        <td class="testresult-detail__name">Error message</td>
-                        <td>{{item.errorMessage}}</td>
-                      </tr>
+                    <tr>
+                      <td class="testresult-detail__name">Class name</td>
+                      <td>{{item.test.className}}</td>
+                    </tr>
+                    <tr>
+                      <td class="testresult-detail__name">Name</td>
+                      <td>{{item.test.name}}</td>
+                    </tr>
+                    <tr>
+                      <td class="testresult-detail__name">Status</td>
+                      <td>{{item.status.name}}</td>
+                    </tr>
+                    <tr>
+                      <td class="testresult-detail__name">Duration</td>
+                      <td>{{item.duration / 1000 | number : '1.2-2' }} sec</td>
+                    </tr>
+                    <tr *ngIf="item.message">
+                      <td class="testresult-detail__name">Message</td>
+                      <td>{{item.message}}</td>
+                    </tr>
+                    <tr *ngIf="item.stackTrace">
+                      <td class="testresult-detail__name">Stack trace</td>
+                      <td>{{item.stackTrace}}</td>
+                    </tr>
+                    <tr *ngIf="item.errorMessage">
+                      <td class="testresult-detail__name">Error message</td>
+                      <td>{{item.errorMessage}}</td>
+                    </tr>
                     </tbody>
                   </table>
                 </div>
@@ -133,13 +137,15 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let element; columns: displayedColumns;" class="testresult-row" [class.testresult-expanded-row]="expandedTestResult === element"
-            (click)="expandedTestResult = element">
+          <tr mat-row *matRowDef="let element; columns: displayedColumns;" class="testresult-row"
+              [class.testresult-expanded-row]="expandedTestResult === element"
+              (click)="expandedTestResult = element">
           </tr>
           <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="testresult-detail-row"></tr>
         </table>
       </div>
-      <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50]" [length]="dataSource.length$ | async" showFirstLastButtons>
+      <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50]"
+                     [length]="dataSource.length$ | async" showFirstLastButtons>
       </mat-paginator>
     </div>
   </div>
