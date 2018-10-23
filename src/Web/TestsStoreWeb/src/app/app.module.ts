@@ -1,15 +1,16 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
-import { HttpClientModule } from '@angular/common/http';
+import {AppComponent} from './app.component';
+import {AppRoutingModule} from './app-routing.module';
+import {HttpClientModule} from '@angular/common/http';
 
-import { CommonAppModule } from './modules/common/common.module';
-import { BuildModule } from './modules/build/build.module';
-import { TestModule } from './modules/test/test.module';
-import { ProjectModule } from 'src/app/modules/project/project.module';
+import {CommonAppModule} from './modules/common/common.module';
+import {BuildModule} from './modules/build/build.module';
+import {TestModule} from './modules/test/test.module';
+import {ProjectModule} from 'src/app/modules/project/project.module';
+import {UploadModule} from './modules/upload/upload.module';
 
 @NgModule({
   declarations: [
@@ -17,15 +18,17 @@ import { ProjectModule } from 'src/app/modules/project/project.module';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,    
+    AppRoutingModule,
     HttpClientModule,
     FormsModule,
     CommonAppModule,
     ProjectModule,
     BuildModule,
-    TestModule
+    TestModule,
+    UploadModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

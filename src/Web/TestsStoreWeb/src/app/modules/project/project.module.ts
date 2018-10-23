@@ -1,11 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { CommonAppModule } from 'src/app/modules/common/common.module';
-import { ProjectsComponent } from 'src/app/modules/project/components/projects/projects.component';
-import { BuildModule } from 'src/app/modules/build/build.module';
-import { TestModule } from '../test/test.module';
+import {CommonAppModule} from 'src/app/modules/common/common.module';
+import {ProjectsComponent} from 'src/app/modules/project/components/projects/projects.component';
+import {BuildModule} from 'src/app/modules/build/build.module';
+import {TestModule} from '../test/test.module';
+import {UploadModule} from '../upload/upload.module';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { TestModule } from '../test/test.module';
     CommonAppModule,
     FormsModule,
     BuildModule,
-    TestModule
+    TestModule,
+    UploadModule
   ],
   exports: [
     ProjectsComponent
@@ -22,4 +24,5 @@ import { TestModule } from '../test/test.module';
     ProjectsComponent
   ]
 })
-export class ProjectModule { }
+export class ProjectModule {
+}
