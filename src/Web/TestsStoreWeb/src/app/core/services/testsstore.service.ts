@@ -19,23 +19,23 @@ export class TestsStoreService {
 
   getProjects(): Observable<IProject[]> {
     return this.http.get<IProject[]>(this.baseUrl + 'project/items')
-      .pipe(catchError(this.handleError('getProjects', [])));
+      .pipe(catchError(this.handleError<IProject[]>('getProjects')));
   }
 
   getBuilds(projectId: string): Observable<IBuild[]> {
     return this.http.get<IBuild[]>(this.baseUrl + 'build/project/' + projectId)
-      .pipe(catchError(this.handleError('getBuilds', [])));
+      .pipe(catchError(this.handleError<IBuild[]>('getBuilds')));
   }
 
   getBuildDetails(buildId: string): Observable<IBuildDetails> {
     return this.http.get<IBuildDetails>(this.baseUrl + 'build/id/' + buildId + '/details')
-      .pipe(catchError(this.handleError('getBuilds', null)));
+      .pipe(catchError(this.handleError<IBuildDetails>('getBuildDetails')));
   }
 
   getTestStatistic(testId: string): Observable<ITestResult[]> {
     return this.http.get<ITestResult[]>(
       `${this.baseUrl}testresult/items/test/${testId}/statistic`)
-      .pipe(catchError(this.handleError('getBuilds', [])));
+      .pipe(catchError(this.handleError<ITestResult[]>('getTestStatistic')));
   }
 
   getTestResults(
@@ -47,13 +47,13 @@ export class TestsStoreService {
   ): Observable<IPaginatedItems<ITestResult>> {
     return this.http.get<IPaginatedItems<ITestResult>>(
       `${this.baseUrl}testresult/items/build/${buildId}?filter=${filter}&pageSize=${pageSize}&pageIndex=${pageIndex}`)
-      .pipe(catchError(this.handleError('getBuilds', null)));
+      .pipe(catchError(this.handleError<IPaginatedItems<ITestResult>>('getBuilds')));
   }
-
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(error);
+      console.log(`${operation} failed: ${error.message}`);
+      // console.error(error.error);
       return of(result as T);
     };
   }
