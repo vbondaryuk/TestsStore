@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TestsStore.Api.CommandModels;
 using TestsStore.Api.Infrastructure;
+using TestsStore.Api.Infrastructure.Commands;
 using TestsStore.Api.Models;
 using TestsStore.Api.ViewModels;
 
@@ -107,9 +107,9 @@ namespace TestsStore.Api.Controllers
 		//Post testresult/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<ActionResult<IEnumerable<TestResult>>> CreateTestResult([FromBody]TestResultCommandModel testResultCommandModel)
+		public async Task<ActionResult<IEnumerable<TestResult>>> CreateTestResult([FromBody]AddTestResultCommand addTestResultCommandModel)
 		{
-			var testResultForInsert = await HandleAddCommand(testResultCommandModel);
+			var testResultForInsert = await HandleAddCommand(addTestResultCommandModel);
 
 			var projectEntry = await testsStoreContext.TestResults.AddAsync(testResultForInsert);
 			await testsStoreContext.SaveChangesAsync();
@@ -118,40 +118,40 @@ namespace TestsStore.Api.Controllers
 			return Ok(testResult);
 		}
 
-		private async Task<TestResult> HandleAddCommand(TestResultCommandModel testResultQueryModel)
+		private async Task<TestResult> HandleAddCommand(AddTestResultCommand addTestResultCommandModel)
 		{
-			var status = Enumeration.FromDisplayName<Status>(testResultQueryModel.Status);
-			var test = await GetOrCreateTestAsync(testResultQueryModel);
+			var status = Enumeration.FromDisplayName<Status>(addTestResultCommandModel.Status);
+			var test = await GetOrCreateTestAsync(addTestResultCommandModel);
 
 			return new TestResult
 			{
 				Id = Guid.NewGuid(),
 				TestId = test.Id,
-				BuildId = testResultQueryModel.BuildId,
-				Duration = testResultQueryModel.Duration.Milliseconds,
+				BuildId = addTestResultCommandModel.BuildId,
+				Duration = addTestResultCommandModel.Duration.Milliseconds,
 				StatusId = status.Id,
-				Messages = testResultQueryModel.Messages,
-				StackTrace = testResultQueryModel.StackTrace,
-				ErrorMessage = testResultQueryModel.ErrorMessage
+				Messages = addTestResultCommandModel.Messages,
+				StackTrace = addTestResultCommandModel.StackTrace,
+				ErrorMessage = addTestResultCommandModel.ErrorMessage
 			};
 		}
 
-		private async Task<Test> GetOrCreateTestAsync(TestResultCommandModel testResultQueryModel)
+		private async Task<Test> GetOrCreateTestAsync(AddTestResultCommand addTestResultCommandModel)
 		{
 			var test = await testsStoreContext.Tests
 				.FirstOrDefaultAsync(x =>
-					x.Name == testResultQueryModel.Name && 
-					x.ClassName == testResultQueryModel.ClassName &&
-					x.ProjectId == testResultQueryModel.ProjectId);
+					x.Name == addTestResultCommandModel.Name && 
+					x.ClassName == addTestResultCommandModel.ClassName &&
+					x.ProjectId == addTestResultCommandModel.ProjectId);
 
 			if (test == null)
 			{
 				test = new Test
 				{
 					Id = Guid.NewGuid(),
-					Name = testResultQueryModel.Name,
-					ClassName = testResultQueryModel.ClassName,
-					ProjectId = testResultQueryModel.ProjectId
+					Name = addTestResultCommandModel.Name,
+					ClassName = addTestResultCommandModel.ClassName,
+					ProjectId = addTestResultCommandModel.ProjectId
 				};
 				await testsStoreContext.Tests.AddAsync(test);
 			}

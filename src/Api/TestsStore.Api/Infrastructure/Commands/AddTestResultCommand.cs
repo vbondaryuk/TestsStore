@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TestsStore.Api.CommandModels
+namespace TestsStore.Api.Infrastructure.Commands
 {
-	public class TestResultCommandModel
+	public class AddTestResultCommand
 	{
 		public Guid BuildId { get; set; }
 

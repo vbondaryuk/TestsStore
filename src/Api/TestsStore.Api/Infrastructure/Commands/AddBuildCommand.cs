@@ -1,9 +1,9 @@
 ﻿using System;
 using TestsStore.Api.Models;
 
-namespace TestsStore.Api.CommandModels
+namespace TestsStore.Api.Infrastructure.Commands
 {
-	public class BuildCommandModel
+	public class AddBuildCommand
 	{
 		public Guid Id { get; set; }
 
@@ -16,6 +16,19 @@ namespace TestsStore.Api.CommandModels
 		public DateTime StartTime { get; set; }
 
 		public DateTime EndTime { get; set; }
+
+		public AddBuildCommand()
+		{}
+
+		public AddBuildCommand(Guid id, Guid projectId, string name, string status, DateTime startTime, DateTime endTime)
+		{
+			Id = id;
+			ProjectId = projectId;
+			Name = name;
+			Status = status;
+			StartTime = startTime;
+			EndTime = endTime;
+		}
 
 		public Build ToBuild()
 		{

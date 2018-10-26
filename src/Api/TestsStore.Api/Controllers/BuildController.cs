@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TestsStore.Api.CommandModels;
 using TestsStore.Api.Infrastructure;
+using TestsStore.Api.Infrastructure.Commands;
 using TestsStore.Api.Models;
 using TestsStore.Api.ViewModels;
 
@@ -86,9 +86,9 @@ namespace TestsStore.Api.Controllers
 		//Post build/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<IActionResult> CreateBuild([FromBody]BuildCommandModel buildCommandModel)
+		public async Task<IActionResult> CreateBuild([FromBody]AddBuildCommand addBuildCommand)
 		{
-			Build build = await HandleAddCommandAsync(buildCommandModel);
+			Build build = await HandleAddCommandAsync(addBuildCommand);
 
 			return CreatedAtAction(nameof(CreateBuild), build);
 		}
@@ -96,16 +96,16 @@ namespace TestsStore.Api.Controllers
 		//Put build/items
 		[HttpPut]
 		[Route("items")]
-		public async Task<IActionResult> UpdateBuild([FromBody]BuildCommandModel buildCommandModel)
+		public async Task<IActionResult> UpdateBuild([FromBody]UpdateBuildCommand updateBuildCommand)
 		{
-			Build build = await  HandleUpdateCommandAsync(buildCommandModel);
+			Build build = await  HandleUpdateCommandAsync(updateBuildCommand);
 
 			return Ok(build);
 		}
 
-		private async Task<Build> HandleAddCommandAsync(BuildCommandModel buildCommandModel)
+		private async Task<Build> HandleAddCommandAsync(AddBuildCommand addBuildCommand)
 		{
-			Build build = buildCommandModel.ToBuild();
+			Build build = addBuildCommand.ToBuild();
 
 			await testsStoreContext.Builds.AddAsync(build);
 			await testsStoreContext.SaveChangesAsync();
@@ -113,13 +113,13 @@ namespace TestsStore.Api.Controllers
 			return build;
 		}
 
-		private async Task<Build> HandleUpdateCommandAsync(BuildCommandModel buildCommandModel)
+		private async Task<Build> HandleUpdateCommandAsync(UpdateBuildCommand updateBuildCommand)
 		{
 			var build = await testsStoreContext.Builds
-				.FirstOrDefaultAsync(x => x.Id == buildCommandModel.Id);
+				.FirstOrDefaultAsync(x => x.Id == updateBuildCommand.Id);
 
-			var status = Enumeration.FromDisplayName<Status>(buildCommandModel.Status);
-			build.EndTime = buildCommandModel.EndTime;
+			var status = Enumeration.FromDisplayName<Status>(updateBuildCommand.Status);
+			build.EndTime = updateBuildCommand.EndTime;
 			build.StatusId = status.Id;
 
 			testsStoreContext.Builds.Update(build);
