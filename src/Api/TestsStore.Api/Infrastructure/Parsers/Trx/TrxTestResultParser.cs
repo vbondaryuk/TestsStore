@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using TestsStore.Api.Infrastructure.Commands;
 using TestsStore.Api.Infrastructure.Parsers.Trx.Models;
@@ -29,7 +30,7 @@ namespace TestsStore.Api.Infrastructure.Parsers.Trx
 
 		private ParseResult ParseTestRunResult(TestRun testRunResult)
 		{
-			var addBuildCommand = new AddBuildCommand
+			var addBuildCommand = new CreateBuildCommand
 			{
 				Name = testRunResult.Name,
 				StartTime = DateTime.Parse(testRunResult.Times.Start),
@@ -37,21 +38,36 @@ namespace TestsStore.Api.Infrastructure.Parsers.Trx
 				Status = ResolveStatus(testRunResult.ResultSummary.Outcome)
 			};
 
-			List<AddTestResultCommand> testResultCommands = new List<AddTestResultCommand>(testRunResult.Results.UnitTestResult.Count);
-			foreach (UnitTestResult unitTestResult in testRunResult.Results.UnitTestResult)
-			{
-				AddTestResultCommand addTestResultCommand = CreateAddTestResultCommand(unitTestResult);
-
-				testResultCommands.Add(addTestResultCommand);
-			}
+			List<CreateTestResultCommand> testResultCommands = CreateAddTestResultCommands(testRunResult);
 
 			return new ParseResult(addBuildCommand,testResultCommands);
 		}
 
-		private static AddTestResultCommand CreateAddTestResultCommand(UnitTestResult unitTestResult)
+		private static List<CreateTestResultCommand> CreateAddTestResultCommands(TestRun testRunResult)
 		{
-			var addTestResultCommand = new AddTestResultCommand
+			List<CreateTestResultCommand> testResultCommands =
+				new List<CreateTestResultCommand>(testRunResult.Results.UnitTestResult.Count);
+			Dictionary<string, UnitTest> testDefinitions = testRunResult.TestDefinitions.UnitTest.ToDictionary(x => x.Id);
+
+			foreach (UnitTestResult unitTestResult in testRunResult.Results.UnitTestResult)
 			{
+				CreateTestResultCommand createTestResultCommand = CreateAddTestResultCommand(unitTestResult, testDefinitions);
+				
+				testResultCommands.Add(createTestResultCommand);
+			}
+
+			return testResultCommands;
+		}
+
+		private static CreateTestResultCommand CreateAddTestResultCommand(
+			UnitTestResult unitTestResult,
+			Dictionary<string, UnitTest> testDefinitions)
+		{
+			var testDefinition = testDefinitions[unitTestResult.TestId];
+			var addTestResultCommand = new CreateTestResultCommand
+			{
+				Name = testDefinition.TestMethod.Name,
+				ClassName = testDefinition.TestMethod.ClassName,
 				Duration = string.IsNullOrEmpty(unitTestResult.Duration)
 					? TimeSpan.Zero
 					: TimeSpan.Parse(unitTestResult.Duration),

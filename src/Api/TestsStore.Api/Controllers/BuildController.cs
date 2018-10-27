@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TestsStore.Api.Infrastructure;
 using TestsStore.Api.Infrastructure.Commands;
+using TestsStore.Api.Infrastructure.Repositories;
 using TestsStore.Api.Models;
-using TestsStore.Api.ViewModels;
 
 namespace TestsStore.Api.Controllers
 {
 	[Route("api/[controller]")]
 	public class BuildController : Controller
 	{
-		private readonly TestsStoreContext testsStoreContext;
+		private readonly BuildCommandHandler _buildCommandHandler;
+		private readonly IBuildRepository _buildRepository;
 
-		public BuildController(TestsStoreContext testsStoreContext)
+		public BuildController(BuildCommandHandler buildCommandHandler, IBuildRepository buildRepository)
 		{
-			this.testsStoreContext = testsStoreContext ?? throw new ArgumentNullException(nameof(testsStoreContext));
+			_buildCommandHandler = buildCommandHandler;
+			_buildRepository = buildRepository;
 		}
 
 		// GET build/id/guid
@@ -25,60 +24,52 @@ namespace TestsStore.Api.Controllers
 		[Route("id/{id:Guid}")]
 		public async Task<IActionResult> Get(Guid id)
 		{
-			var build = await testsStoreContext.Builds
-				.Include(x => x.Status)
-				.FirstOrDefaultAsync(x => x.Id == id);
+			var build = await _buildRepository.GetById(id);
 
 			if (build == null)
-			{
 				return NotFound();
-			}
 
 			return Ok(build);
 		}
 
 		// GET build/id/guid/details
-		[HttpGet]
-		[Route("id/{id:Guid}/details")]
-		public async Task<IActionResult> GetDetails(Guid id)//TODO remove should be skipped to build and testresult get summary
-		{
-			var build = await testsStoreContext.Builds
-				.Include(x => x.Status)
-				.FirstOrDefaultAsync(x => x.Id == id);
+		//[HttpGet]
+		//[Route("id/{id:Guid}/details")]
+		//public async Task<IActionResult> GetDetails(Guid id)//TODO remove should be skipped to build and testresult get summary
+		//{
+		//	var build = await testsStoreContext.Builds
+		//		.Include(x => x.Status)
+		//		.FirstOrDefaultAsync(x => x.Id == id);
 
-			if (build == null)
-				return NotFound();
+		//	if (build == null)
+		//		return NotFound();
 
-			var testStatistic = await testsStoreContext.TestResults
-				.Where(x => x.BuildId == id)
-				.GroupBy(x => x.StatusId)
-				.Select(x => new
-				{
-					StatusId = x.Key,
-					Count = x.Count()
-				}).ToListAsync();
+		//	var testStatistic = await testsStoreContext.TestResults
+		//		.Where(x => x.BuildId == id)
+		//		.GroupBy(x => x.StatusId)
+		//		.Select(x => new
+		//		{
+		//			StatusId = x.Key,
+		//			Count = x.Count()
+		//		}).ToListAsync();
 
-			var testsSummaryViewModels = testStatistic.Select(x => new TestResultsSummaryViewModel
-			{
-				Status = Enumeration.FromValue<Status>(x.StatusId).Name,
-				Count = x.Count
-			}).ToList();
+		//	var testsSummaryViewModels = testStatistic.Select(x => new TestResultsSummaryViewModel
+		//	{
+		//		Status = Enumeration.FromValue<Status>(x.StatusId).Name,
+		//		Count = x.Count
+		//	}).ToList();
 
-			var buildDetailsViewModel = new BuildDetailsViewModel(build, testsSummaryViewModels);
+		//	var buildDetailsViewModel = new BuildDetailsViewModel(build, testsSummaryViewModels);
 
-			return Ok(buildDetailsViewModel);
-		}
+		//	return Ok(buildDetailsViewModel);
+		//}
 
 		// GET build/project/guid
 		[HttpGet]
 		[Route("project/{projectId:Guid}")]
 		public async Task<IActionResult> GetByProject(Guid projectId)
 		{
-			var builds = await testsStoreContext.Builds
-				.Include(x => x.Status)
-				.Where(x => x.ProjectId == projectId)
-				.OrderByDescending(x => x.StartTime)
-				.ToListAsync();
+			var builds = await _buildRepository.GetByProjectId(projectId);
 
 			return Ok(builds);
 		}
@@ -86,11 +77,15 @@ namespace TestsStore.Api.Controllers
 		//Post build/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<IActionResult> CreateBuild([FromBody]AddBuildCommand addBuildCommand)
+		public async Task<IActionResult> CreateBuild([FromBody]CreateBuildCommand createBuildCommand)
 		{
-			Build build = await HandleAddCommandAsync(addBuildCommand);
 
-			return CreatedAtAction(nameof(CreateBuild), build);
+			ICommandResult<Build> commandResult = await _buildCommandHandler.ExecuteAsync(createBuildCommand);
+
+			if (commandResult.Success)
+				return CreatedAtAction(nameof(CreateBuild), commandResult.Result);
+
+			return BadRequest(createBuildCommand);
 		}
 
 		//Put build/items
@@ -98,34 +93,12 @@ namespace TestsStore.Api.Controllers
 		[Route("items")]
 		public async Task<IActionResult> UpdateBuild([FromBody]UpdateBuildCommand updateBuildCommand)
 		{
-			Build build = await  HandleUpdateCommandAsync(updateBuildCommand);
+			ICommandResult<Build> commandResult = await _buildCommandHandler.ExecuteAsync(updateBuildCommand);
 
-			return Ok(build);
-		}
+			if (commandResult.Success)
+				return NoContent();
 
-		private async Task<Build> HandleAddCommandAsync(AddBuildCommand addBuildCommand)
-		{
-			Build build = addBuildCommand.ToBuild();
-
-			await testsStoreContext.Builds.AddAsync(build);
-			await testsStoreContext.SaveChangesAsync();
-
-			return build;
-		}
-
-		private async Task<Build> HandleUpdateCommandAsync(UpdateBuildCommand updateBuildCommand)
-		{
-			var build = await testsStoreContext.Builds
-				.FirstOrDefaultAsync(x => x.Id == updateBuildCommand.Id);
-
-			var status = Enumeration.FromDisplayName<Status>(updateBuildCommand.Status);
-			build.EndTime = updateBuildCommand.EndTime;
-			build.StatusId = status.Id;
-
-			testsStoreContext.Builds.Update(build);
-			await testsStoreContext.SaveChangesAsync();
-
-			return build;
+			return BadRequest(updateBuildCommand);
 		}
 	}
 }
