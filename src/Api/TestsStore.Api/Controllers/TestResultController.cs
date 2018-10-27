@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TestsStore.Api.Infrastructure;
 using TestsStore.Api.Infrastructure.Commands;
+using TestsStore.Api.Infrastructure.Repositories;
 using TestsStore.Api.Models;
 using TestsStore.Api.ViewModels;
 
@@ -15,11 +14,16 @@ namespace TestsStore.Api.Controllers
 	[ApiController]
 	public class TestResultController : Controller
 	{
-		private readonly TestsStoreContext testsStoreContext;
+		private readonly TestResultCommandHandler _testResultCommandHandler;
+		private readonly ITestResultRepository _testResultRepository;
 
-		public TestResultController(TestsStoreContext testsStoreContext)
+		public TestResultController(
+			TestResultCommandHandler testResultCommandHandler,
+			ITestResultRepository testResultRepository)
+
 		{
-			this.testsStoreContext = testsStoreContext ?? throw new ArgumentNullException(nameof(testsStoreContext));
+			_testResultCommandHandler = testResultCommandHandler;
+			_testResultRepository = testResultRepository;
 		}
 
 		// GET testresult/id/guid
@@ -27,57 +31,37 @@ namespace TestsStore.Api.Controllers
 		[Route("id/{id:Guid}")]
 		public async Task<ActionResult<TestResult>> Get(Guid id)
 		{
-			var testResult = await testsStoreContext.TestResults
-				.FirstOrDefaultAsync(x => x.Id == id);
+			var testResult = await _testResultRepository.GetById(id);
+			if (testResult is null)
+				return BadRequest();
 
 			return Ok(testResult);
 		}
 
-		// GET testresult/items/build/guid[?filter=test&pageSize=10&pageIndex=1]
+		// GET testresult/items/build/guid[?filter=test&status=success&pageSize=10&pageIndex=1]
 		[HttpGet]
 		[Route("items/build/{buildId:Guid}")]
-		public async Task<ActionResult<PaginatedItemsViewModel<TestResult>>> GetItems(Guid buildId, [FromQuery]string filter, [FromQuery]int pageSize = 10, [FromQuery]int pageIndex = 0)
+		public async Task<ActionResult<PaginatedItems<TestResult>>> GetItems(
+			Guid buildId,
+			[FromQuery] string filter,
+			[FromQuery] string status,
+			[FromQuery] int pageSize = 10,
+			[FromQuery] int pageIndex = 0)
 		{
-			var query = testsStoreContext.TestResults
-				.Where(x => x.BuildId == buildId);
+			var statusObject = Enumeration.FromDisplayName<Status>(status);
 
-			if (!string.IsNullOrWhiteSpace(filter))
-			{
-				query = query.Where(x =>
-					x.Test.ClassName.Contains(filter) || x.Test.Name.Contains(filter) ||
-					x.Status.Name.Contains(filter));
-			}
+			var paginatedItems =
+				await _testResultRepository.GetPaginatedItems(buildId, filter, statusObject, pageSize, pageIndex);
 
-			query = query.OrderBy(c => c.Test.ClassName)
-				.ThenBy(x => x.Test.Name)
-				.Include(x => x.Test)
-				.Include(x => x.Status);
-
-			var totalItems = await query.LongCountAsync();
-
-			query = query
-				.Skip(pageSize * pageIndex)
-				.Take(pageSize);
-
-			var testResults = await query.ToListAsync();
-			var model = new PaginatedItemsViewModel<TestResult>(pageIndex, pageSize, totalItems, testResults);
-			
-			return Ok(model);
+			return Ok(paginatedItems);
 		}
 
 		// GET testresult/items/test/guid/statistic[?count=1]
 		[HttpGet]
 		[Route("items/test/{testId:Guid}/statistic")]
-		public async Task<ActionResult<TestResult>> GetTestStatistics(Guid testId, [FromQuery]int count = 10)
+		public async Task<ActionResult<TestResult>> GetTestHistory(Guid testId, [FromQuery] int count = 10)
 		{
-			var testResults = await testsStoreContext.TestResults
-				.Include(x => x.Status)
-				.Include(x => x.Test)
-				.Include(x => x.Build)
-				.Where(x => x.TestId == testId)
-				.OrderByDescending(x => x.Build.StartTime)
-				.Take(count)
-				.ToListAsync();
+			var testResults = await _testResultRepository.GetByTestId(testId, count);
 
 			return Ok(testResults);
 		}
@@ -86,18 +70,11 @@ namespace TestsStore.Api.Controllers
 		[Route("testresult/summary/build/{buildId:Guid}")]
 		private async Task<ActionResult<IEnumerable<TestResultsSummaryViewModel>>> GetTestsResultsSummary(Guid buildId)
 		{
-			var testStatistic = await testsStoreContext.TestResults
-				.Where(x => x.BuildId == buildId)
-				.GroupBy(x => x.StatusId)
-				.Select(x => new
-				{
-					StatusId = x.Key,
-					Count = x.Count()
-				}).ToListAsync();
+			var testStatistic = await _testResultRepository.GetSummary(buildId);
 
 			var testResultsSummaryViewModels = testStatistic.Select(x => new TestResultsSummaryViewModel
 			{
-				Status = Enumeration.FromValue<Status>(x.StatusId).Name,
+				Status = x.Status.Name,
 				Count = x.Count
 			}).ToList();
 
@@ -107,56 +84,15 @@ namespace TestsStore.Api.Controllers
 		//Post testresult/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<ActionResult<IEnumerable<TestResult>>> CreateTestResult([FromBody]AddTestResultCommand addTestResultCommandModel)
+		public async Task<ActionResult<IEnumerable<TestResult>>> CreateTestResult(
+			[FromBody] CreateTestResultCommand createTestResultCommandModel)
 		{
-			var testResultForInsert = await HandleAddCommand(addTestResultCommandModel);
+			var commandResult = await _testResultCommandHandler.ExecuteAsync(createTestResultCommandModel);
 
-			var projectEntry = await testsStoreContext.TestResults.AddAsync(testResultForInsert);
-			await testsStoreContext.SaveChangesAsync();
-			var testResult = projectEntry.Entity;
+			if (commandResult.Success)
+				return CreatedAtAction(nameof(CreateTestResult), commandResult.Result);
 
-			return Ok(testResult);
-		}
-
-		private async Task<TestResult> HandleAddCommand(AddTestResultCommand addTestResultCommandModel)
-		{
-			var status = Enumeration.FromDisplayName<Status>(addTestResultCommandModel.Status);
-			var test = await GetOrCreateTestAsync(addTestResultCommandModel);
-
-			return new TestResult
-			{
-				Id = Guid.NewGuid(),
-				TestId = test.Id,
-				BuildId = addTestResultCommandModel.BuildId,
-				Duration = addTestResultCommandModel.Duration.Milliseconds,
-				StatusId = status.Id,
-				Messages = addTestResultCommandModel.Messages,
-				StackTrace = addTestResultCommandModel.StackTrace,
-				ErrorMessage = addTestResultCommandModel.ErrorMessage
-			};
-		}
-
-		private async Task<Test> GetOrCreateTestAsync(AddTestResultCommand addTestResultCommandModel)
-		{
-			var test = await testsStoreContext.Tests
-				.FirstOrDefaultAsync(x =>
-					x.Name == addTestResultCommandModel.Name && 
-					x.ClassName == addTestResultCommandModel.ClassName &&
-					x.ProjectId == addTestResultCommandModel.ProjectId);
-
-			if (test == null)
-			{
-				test = new Test
-				{
-					Id = Guid.NewGuid(),
-					Name = addTestResultCommandModel.Name,
-					ClassName = addTestResultCommandModel.ClassName,
-					ProjectId = addTestResultCommandModel.ProjectId
-				};
-				await testsStoreContext.Tests.AddAsync(test);
-			}
-
-			return test;
+			return BadRequest(createTestResultCommandModel);
 		}
 	}
 }

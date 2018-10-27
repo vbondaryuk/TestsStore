@@ -2,7 +2,7 @@
 
 namespace TestsStore.Api.Infrastructure.Commands
 {
-	public class UpdateBuildCommand
+	public class UpdateBuildCommand : ICommand
 	{
 		public Guid Id { get; set; }
 

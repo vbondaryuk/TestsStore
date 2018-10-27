@@ -2,11 +2,11 @@
 
 namespace TestsStore.Api.Infrastructure.Commands
 {
-	public class AddTestResultCommand
+	public class CreateTestResultCommand : ICommand
 	{
-		public Guid BuildId { get; set; }
-
 		public Guid ProjectId { get; set; }
+
+		public Guid BuildId { get; set; }
 
 		public string Name { get; set; }
 

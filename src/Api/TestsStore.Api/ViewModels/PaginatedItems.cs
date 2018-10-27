@@ -2,7 +2,7 @@
 
 namespace TestsStore.Api.ViewModels
 {
-	public class PaginatedItemsViewModel<T>
+	public class PaginatedItems<T>
 	{
 		public int PageIndex { get; }
 
@@ -12,7 +12,7 @@ namespace TestsStore.Api.ViewModels
 
 		public IEnumerable<T> Data { get; }
 
-		public PaginatedItemsViewModel(int pageIndex, int pageSize, long count, IEnumerable<T> data)
+		public PaginatedItems(int pageIndex, int pageSize, long count, IEnumerable<T> data)
 		{
 			this.PageIndex = pageIndex;
 			this.PageSize = pageSize;

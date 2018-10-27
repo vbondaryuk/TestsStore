@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TestsStore.Api.Infrastructure;
+using TestsStore.Api.Infrastructure.Repositories;
 
 namespace TestsStore.Api.Controllers
 {
@@ -11,11 +9,11 @@ namespace TestsStore.Api.Controllers
 	[ApiController]
 	public class TestController : Controller
 	{
-		private readonly TestsStoreContext testsStoreContext;
+		private readonly ITestRepository _testRepository;
 
-		public TestController(TestsStoreContext testsStoreContext)
+		public TestController(ITestRepository testRepository)
 		{
-			this.testsStoreContext = testsStoreContext ?? throw new ArgumentNullException(nameof(testsStoreContext));
+			_testRepository = testRepository;
 		}
 
 		// GET test/id/guid
@@ -23,8 +21,7 @@ namespace TestsStore.Api.Controllers
 		[Route("id/{id:Guid}")]
 		public async Task<IActionResult> Get(Guid id)
 		{
-			var test = await testsStoreContext.Tests
-				.FirstOrDefaultAsync(x => x.Id == id);
+			var test = await _testRepository.GetById(id);
 
 			if (test == null)
 				return NotFound();
@@ -37,9 +34,7 @@ namespace TestsStore.Api.Controllers
 		[Route("project/{projectId:Guid}")]
 		public async Task<IActionResult> GetByProject(Guid projectId)
 		{
-			var tests = await testsStoreContext.Tests
-				.Where(x => x.ProjectId == projectId)
-				.ToListAsync();
+			var tests = await _testRepository.GetByProjectId(projectId);
 
 			return Ok(tests);
 		}

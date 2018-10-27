@@ -5,12 +5,12 @@ namespace TestsStore.Api.Infrastructure.Parsers
 {
 	public class ParseResult
 	{
-		public AddBuildCommand AddBuildCommand { get; set; }
-		public List<AddTestResultCommand> AddTestResultCommands { get; set; }
+		public CreateBuildCommand CreateBuildCommand { get; set; }
+		public List<CreateTestResultCommand> AddTestResultCommands { get; set; }
 
-		public ParseResult(AddBuildCommand addBuildCommand, List<AddTestResultCommand> testResultCommands)
+		public ParseResult(CreateBuildCommand createBuildCommand, List<CreateTestResultCommand> testResultCommands)
 		{
-			AddBuildCommand = addBuildCommand;
+			CreateBuildCommand = createBuildCommand;
 			AddTestResultCommands = testResultCommands;
 		}
 	}
