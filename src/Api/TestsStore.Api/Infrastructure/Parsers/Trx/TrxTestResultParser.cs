@@ -31,6 +31,7 @@ namespace TestsStore.Api.Infrastructure.Parsers.Trx
 		{
 			var addBuildCommand = new AddBuildCommand
 			{
+				Id = Guid.NewGuid(),
 				Name = testRunResult.Name,
 				StartTime = DateTime.Parse(testRunResult.Times.Start),
 				EndTime = DateTime.Parse(testRunResult.Times.Finish),
@@ -38,6 +39,7 @@ namespace TestsStore.Api.Infrastructure.Parsers.Trx
 			};
 
 			List<AddTestResultCommand> testResultCommands = new List<AddTestResultCommand>(testRunResult.Results.UnitTestResult.Count);
+
 			foreach (UnitTestResult unitTestResult in testRunResult.Results.UnitTestResult)
 			{
 				AddTestResultCommand addTestResultCommand = CreateAddTestResultCommand(unitTestResult);
