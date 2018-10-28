@@ -8,11 +8,11 @@ namespace TestsStore.Api.Infrastructure.Commands
 	public class TestResultCommandHandler : ICommandHandler<CreateTestResultCommand, TestResult>
 	{
 		private readonly TestCommandHandler _testCommandHandler;
-		private readonly TestResultRepository _testResultRepository;
+		private readonly ITestResultRepository _testResultRepository;
 
 		public TestResultCommandHandler(
 			TestCommandHandler testCommandHandler,
-			TestResultRepository testResultRepository)
+			ITestResultRepository testResultRepository)
 		{
 			_testCommandHandler = testCommandHandler;
 			_testResultRepository = testResultRepository;

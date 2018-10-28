@@ -11,7 +11,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
 using TestsStore.Api.Infrastructure;
+using TestsStore.Api.Infrastructure.Commands;
 using TestsStore.Api.Infrastructure.Filters;
+using TestsStore.Api.Infrastructure.Repositories;
 
 namespace TestsStore.Api
 {
@@ -46,6 +48,15 @@ namespace TestsStore.Api
 						.AllowAnyHeader()
 						.AllowCredentials());
 			});
+
+			services.AddScoped<IBuildRepository, BuildRepository>()
+				.AddScoped<IProjectRepository, ProjectRepository>()
+				.AddScoped<ITestRepository, TestRepository>()
+				.AddScoped<ITestResultRepository, TestResultRepository>()
+				.AddScoped<BuildCommandHandler>()
+				.AddScoped<ProjectCommandHandler>()
+				.AddScoped<TestCommandHandler>()
+				.AddScoped<TestResultCommandHandler>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

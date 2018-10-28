@@ -48,7 +48,7 @@ namespace TestsStore.Api.Controllers
 			[FromQuery] int pageSize = 10,
 			[FromQuery] int pageIndex = 0)
 		{
-			var statusObject = Enumeration.FromDisplayName<Status>(status);
+			Status statusObject = status is null ? null : Enumeration.FromDisplayName<Status>(status);
 
 			var paginatedItems =
 				await _testResultRepository.GetPaginatedItems(buildId, filter, statusObject, pageSize, pageIndex);

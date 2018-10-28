@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -17,20 +18,29 @@ namespace TestsStore.VS.TestLogger.Services
 
 		public async Task<Project> GetProjectAsync(string projectName)
 		{
-			string responseJson = await client.GetStringAsync($"project/name/{projectName}").ConfigureAwait(false);
-
-			if (string.IsNullOrWhiteSpace(responseJson))
+			Project project = null;
+			var httpResponseMessage = await client.GetAsync($"project/name/{projectName}").ConfigureAwait(false);
+			if (!httpResponseMessage.IsSuccessStatusCode)
 			{
-				var projectInfo = new {Name = projectName};
-				var buildContent = new StringContent(JsonConvert.SerializeObject(projectInfo), System.Text.Encoding.UTF8, "application/json");
-				var response = await client.PostAsync("project/items", buildContent).ConfigureAwait(false);
+				if (httpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+				{
+					var projectInfo = new { Name = projectName };
+					var buildContent = new StringContent(JsonConvert.SerializeObject(projectInfo), System.Text.Encoding.UTF8, "application/json");
+					var response = await client.PostAsync("project/items", buildContent).ConfigureAwait(false);
 
-				response.EnsureSuccessStatusCode();
+					response.EnsureSuccessStatusCode();
 
-				responseJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+					var responseJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+					project = JsonConvert.DeserializeObject<Project>(responseJson);
+				}
 			}
-			
-			return JsonConvert.DeserializeObject<Project>(responseJson);
+			else
+			{
+				string responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
+				project = JsonConvert.DeserializeObject<Project>(responseJson);
+			}
+
+			return project;
 		}
 
 		public async Task<Build> AddBuildAsync(Build build)
