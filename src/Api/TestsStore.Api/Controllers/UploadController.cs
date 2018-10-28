@@ -1,9 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TestsStore.Api.Infrastructure.Parsers;
-using TestsStore.Api.Infrastructure.Services;
+using TestsStore.Api.Infrastructure.Commands;
 
 namespace TestsStore.Api.Controllers
 {
@@ -11,24 +9,32 @@ namespace TestsStore.Api.Controllers
 	[ApiController]
 	public class UploadController : Controller
 	{
-		
-		public UploadController()
+		private readonly UploadTestResultCommandHandler _uploadTestResultCommandHandler;
+
+		public UploadController(UploadTestResultCommandHandler uploadTestResultCommandHandler)
 		{
+			_uploadTestResultCommandHandler = uploadTestResultCommandHandler;
 		}
 
 		// POSt api/upload/trx
-		[HttpPost, DisableRequestSizeLimit]
+		[HttpPost]
+		[DisableRequestSizeLimit]
 		[Route("trx")]
-		public async Task<ActionResult> TrxUpload([FromBody]string projectName)
+		public async Task<ActionResult> TrxUpload([FromBody] string projectName, [FromBody] string type)
 		{
-			IFormFile file = Request.Form.Files?.FirstOrDefault();
-			if (file == null)
-			{
-				return BadRequest("Trx file should be included");
-			}
+			var file = Request.Form.Files?.FirstOrDefault();
+			if (file == null) return BadRequest("Trx file should be included");
 
-			var uploadTestResultService = new UploadTestResultService();
-			await uploadTestResultService.UplodAsync(projectName, file.OpenReadStream(), ParserType.Trx);
+			var uploadTestResultCommand = new UploadTestResultCommand
+			{
+				ProjectName = projectName,
+				FileType = type,
+				Stream = file.OpenReadStream()
+			};
+			var commandResult = await _uploadTestResultCommandHandler.ExecuteAsync(uploadTestResultCommand);
+
+			if (!commandResult.Success)
+				return BadRequest();
 
 			return Ok();
 		}

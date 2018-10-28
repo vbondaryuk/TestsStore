@@ -21,5 +21,12 @@ namespace TestsStore.Api.Infrastructure.Parsers
 
 			throw new ArgumentException(nameof(parserType));
 		}
+
+		public static ITestResultParser Create(string parserType)
+		{
+			ParserType type = Enum.Parse<ParserType>(parserType, true);
+
+			return Create(type);
+		}
 	}
 }

@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TestsStore.Api.Infrastructure.Repositories;
 using TestsStore.Api.Models;
 
 namespace TestsStore.Api.Infrastructure.Commands
 {
-	public class TestResultCommandHandler : ICommandHandler<CreateTestResultCommand, TestResult>
+	public class TestResultCommandHandler
+		: ICommandHandler<CreateTestResultCommand, TestResult>,
+			ICommandHandler<AddBatchTestResultCommand>
+
 	{
 		private readonly TestCommandHandler _testCommandHandler;
 		private readonly ITestResultRepository _testResultRepository;
@@ -18,7 +22,30 @@ namespace TestsStore.Api.Infrastructure.Commands
 			_testResultRepository = testResultRepository;
 		}
 
+		public async Task<ICommandResult> ExecuteAsync(AddBatchTestResultCommand command)
+		{
+			var testResults = new List<TestResult>(command.CreateTestResultCommands.Count);
+			foreach (var createTestResultCommand in command.CreateTestResultCommands)
+			{
+				var testResult = await CreateTestResult(createTestResultCommand);
+				testResults.Add(testResult);
+			}
+
+			await _testResultRepository.AddRange(testResults);
+
+			return new CommandResult(true);
+		}
+
 		public async Task<ICommandResult<TestResult>> ExecuteAsync(CreateTestResultCommand command)
+		{
+			var testResult = await CreateTestResult(command);
+
+			await _testResultRepository.Add(testResult);
+
+			return new CommandResult<TestResult>(true, testResult);
+		}
+
+		private async Task<TestResult> CreateTestResult(CreateTestResultCommand command)
 		{
 			var status = Enumeration.FromDisplayName<Status>(command.Status);
 			var test = await GetTest(command);
@@ -34,10 +61,7 @@ namespace TestsStore.Api.Infrastructure.Commands
 				StackTrace = command.StackTrace,
 				ErrorMessage = command.ErrorMessage
 			};
-
-			await _testResultRepository.Add(testResult);
-
-			return new CommandResult<TestResult>(true, testResult);
+			return testResult;
 		}
 
 		private async Task<Test> GetTest(CreateTestResultCommand command)

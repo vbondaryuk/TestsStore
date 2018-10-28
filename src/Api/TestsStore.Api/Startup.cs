@@ -56,7 +56,8 @@ namespace TestsStore.Api
 				.AddScoped<BuildCommandHandler>()
 				.AddScoped<ProjectCommandHandler>()
 				.AddScoped<TestCommandHandler>()
-				.AddScoped<TestResultCommandHandler>();
+				.AddScoped<TestResultCommandHandler>()
+				.AddScoped<UploadTestResultCommandHandler>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

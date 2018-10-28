@@ -1,14 +1,23 @@
 ﻿namespace TestsStore.Api.Infrastructure.Commands
 {
-	public class CommandResult<TValue> : ICommandResult<TValue>
+	public class CommandResult : ICommandResult
 	{
-		public bool Success { get; set; }
-		public TValue Result { get; set; }
+		public CommandResult(bool success)
+		{
+			Success = success;
+		}
 
-		public CommandResult(bool success, TValue result)
+		public bool Success { get; set; }
+	}
+
+	public class CommandResult<TValue> : CommandResult, ICommandResult<TValue>
+	{
+		public CommandResult(bool success, TValue result) : base(success)
 		{
 			Success = success;
 			Result = result;
 		}
+
+		public TValue Result { get; set; }
 	}
 }
