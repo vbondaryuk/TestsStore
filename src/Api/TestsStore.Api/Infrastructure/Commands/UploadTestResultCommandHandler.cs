@@ -24,7 +24,10 @@ namespace TestsStore.Api.Infrastructure.Commands
 			var parser = ParserFactory.Create(command.FileType);
 			var parseResult = parser.Parse(command.Stream);
 
-			var createProjectCommand = new CreateProjectCommand();
+			var createProjectCommand = new CreateProjectCommand
+			{
+				Name = command.ProjectName
+			};
 			var projectCommandResult = await _projectCommandHandler.ExecuteAsync(createProjectCommand);
 			if (!projectCommandResult.Success)
 				return FailedResult();
