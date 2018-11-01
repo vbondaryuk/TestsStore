@@ -4,8 +4,14 @@ namespace TestsStore.Api.Infrastructure.Commands
 {
 	public class CreateProjectCommand : ICommand
 	{
-		public Guid Id { get; set; } = Guid.NewGuid();
+		public CreateProjectCommand(string name)
+		{
+			Id = Guid.NewGuid();
+			Name = name;
+		}
 
-		public string Name { get; set; }
+		public Guid Id { get; }
+
+		public string Name { get; }
 	}
 }

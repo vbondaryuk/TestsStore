@@ -4,8 +4,15 @@ namespace TestsStore.Api.Infrastructure.Commands
 {
 	public class UploadTestResultCommand : ICommand
 	{
-		public string ProjectName { get; set; }
-		public string FileType { get; set; }
-		public Stream Stream { get; set; }
+		public UploadTestResultCommand(string projectName, string fileType, Stream stream)
+		{
+			ProjectName = projectName;
+			FileType = fileType;
+			Stream = stream;
+		}
+
+		public string ProjectName { get; }
+		public string FileType { get; }
+		public Stream Stream { get; }
 	}
 }

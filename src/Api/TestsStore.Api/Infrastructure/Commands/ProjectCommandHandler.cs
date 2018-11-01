@@ -16,6 +16,10 @@ namespace TestsStore.Api.Infrastructure.Commands
 
 		public async Task<ICommandResult<Project>> ExecuteAsync(CreateProjectCommand command)
 		{
+			if (string.IsNullOrWhiteSpace(command.Name))
+			{
+				return new CommandResult<Project>(false, null);
+			}
 			var project = await _projectRepository.GetByName(command.Name);
 
 			if (project == null)

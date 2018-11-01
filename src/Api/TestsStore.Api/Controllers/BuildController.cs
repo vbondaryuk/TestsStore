@@ -32,38 +32,6 @@ namespace TestsStore.Api.Controllers
 			return Ok(build);
 		}
 
-		// GET build/id/guid/details
-		//[HttpGet]
-		//[Route("id/{id:Guid}/details")]
-		//public async Task<IActionResult> GetDetails(Guid id)//TODO remove should be skipped to build and testresult get summary
-		//{
-		//	var build = await testsStoreContext.Builds
-		//		.Include(x => x.Status)
-		//		.FirstOrDefaultAsync(x => x.Id == id);
-
-		//	if (build == null)
-		//		return NotFound();
-
-		//	var testStatistic = await testsStoreContext.TestResults
-		//		.Where(x => x.BuildId == id)
-		//		.GroupBy(x => x.StatusId)
-		//		.Select(x => new
-		//		{
-		//			StatusId = x.Key,
-		//			Count = x.Count()
-		//		}).ToListAsync();
-
-		//	var testsSummaryViewModels = testStatistic.Select(x => new TestResultsSummaryViewModel
-		//	{
-		//		Status = Enumeration.FromValue<Status>(x.StatusId).Name,
-		//		Count = x.Count
-		//	}).ToList();
-
-		//	var buildDetailsViewModel = new BuildDetailsViewModel(build, testsSummaryViewModels);
-
-		//	return Ok(buildDetailsViewModel);
-		//}
-
 		// GET build/project/guid
 		[HttpGet]
 		[Route("project/{projectId:Guid}")]

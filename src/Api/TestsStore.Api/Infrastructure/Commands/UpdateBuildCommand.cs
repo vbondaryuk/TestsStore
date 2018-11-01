@@ -4,10 +4,17 @@ namespace TestsStore.Api.Infrastructure.Commands
 {
 	public class UpdateBuildCommand : ICommand
 	{
-		public Guid Id { get; set; }
+		public UpdateBuildCommand(Guid id, string status, DateTime endTime)
+		{
+			Id = id;
+			Status = status;
+			EndTime = endTime;
+		}
 
-		public string Status { get; set; }
+		public Guid Id { get;}
 
-		public DateTime EndTime { get; set; }
+		public string Status { get; }
+
+		public DateTime EndTime { get; }
 	}
 }

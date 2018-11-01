@@ -13,7 +13,7 @@ namespace TestsStore.Api.Models
 
 		private Status() {}
 
-		public Status(Guid id, string name)
+		private Status(Guid id, string name)
 			:base(id, name)
 		{
 		}

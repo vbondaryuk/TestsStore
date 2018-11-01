@@ -4,10 +4,17 @@ namespace TestsStore.Api.Infrastructure.Commands
 {
 	public class CreateOrUpdateTestCommand : ICommand
 	{
-		public string Name { get; set; }
+		public CreateOrUpdateTestCommand(string name, string className, Guid projectId)
+		{
+			Name = name;
+			ClassName = className;
+			ProjectId = projectId;
+		}
 
-		public string ClassName { get; set; }
+		public string Name { get; }
 
-		public Guid ProjectId { get; set; }
+		public string ClassName { get; }
+
+		public Guid ProjectId { get; }
 	}
 }

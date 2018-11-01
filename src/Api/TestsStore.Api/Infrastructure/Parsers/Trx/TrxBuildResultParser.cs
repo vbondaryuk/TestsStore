@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-using TestsStore.Api.Infrastructure.Commands;
 using TestsStore.Api.Infrastructure.Parsers.Trx.Models;
 
 namespace TestsStore.Api.Infrastructure.Parsers.Trx
 {
-	public class TrxTestResultParser : ITestResultParser
+	public class TrxBuildResultParser : IBuildResultParser
 	{
-		public ParseResult Parse(Stream stream)
+		public BuildParseResult Parse(Stream stream)
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(TestRun));
 			try
@@ -28,52 +27,57 @@ namespace TestsStore.Api.Infrastructure.Parsers.Trx
 			}
 		}
 
-		private ParseResult ParseTestRunResult(TestRun testRunResult)
+		private static BuildParseResult ParseTestRunResult(TestRun testRunResult)
 		{
-			var addBuildCommand = new CreateBuildCommand
+			var status = ResolveStatus(testRunResult.ResultSummary.Outcome);
+			var startTime = DateTime.Parse(testRunResult.Times.Start);
+			var endTime = DateTime.Parse(testRunResult.Times.Finish);
+			List<TestResultParseResult> testResults = RetrieveTestResults(testRunResult);
+
+			var buildParseResult = new BuildParseResult
 			{
-				Id = Guid.NewGuid(),
 				Name = testRunResult.Name,
-				StartTime = DateTime.Parse(testRunResult.Times.Start),
-				EndTime = DateTime.Parse(testRunResult.Times.Finish),
-				Status = ResolveStatus(testRunResult.ResultSummary.Outcome)
+				Status = status,
+				StartTime = startTime,
+				EndTime = endTime,
+				TestResults = testResults
 			};
 
-			List<CreateTestResultCommand> testResultCommands = CreateAddTestResultCommands(testRunResult);
-
-			return new ParseResult(addBuildCommand,testResultCommands);
+			return buildParseResult;
 		}
 
-		private static List<CreateTestResultCommand> CreateAddTestResultCommands(TestRun testRunResult)
+		private static List<TestResultParseResult> RetrieveTestResults(TestRun testRunResult)
 		{
-			List<CreateTestResultCommand> testResultCommands =
-				new List<CreateTestResultCommand>(testRunResult.Results.UnitTestResult.Count);
+			List<TestResultParseResult> testResults =
+				new List<TestResultParseResult>(testRunResult.Results.UnitTestResult.Count);
 			Dictionary<string, UnitTest> testDefinitions = testRunResult.TestDefinitions.UnitTest.ToDictionary(x => x.Id);
 
 			foreach (UnitTestResult unitTestResult in testRunResult.Results.UnitTestResult)
 			{
-				CreateTestResultCommand createTestResultCommand = CreateAddTestResultCommand(unitTestResult, testDefinitions);
-				
-				testResultCommands.Add(createTestResultCommand);
+				TestResultParseResult createTestResultCommand = RetrieveTestResult(unitTestResult, testDefinitions);
+				testResults.Add(createTestResultCommand);
 			}
 
-			return testResultCommands;
+			return testResults;
 		}
 
-		private static CreateTestResultCommand CreateAddTestResultCommand(
+		private static TestResultParseResult RetrieveTestResult(
 			UnitTestResult unitTestResult,
 			Dictionary<string, UnitTest> testDefinitions)
 		{
 			var testDefinition = testDefinitions[unitTestResult.TestId];
-			var addTestResultCommand = new CreateTestResultCommand
+			var duration = string.IsNullOrEmpty(unitTestResult.Duration)
+				? TimeSpan.Zero
+				: TimeSpan.Parse(unitTestResult.Duration);
+
+			var addTestResultCommand = new TestResultParseResult
 			{
 				Name = testDefinition.TestMethod.Name,
 				ClassName = testDefinition.TestMethod.ClassName,
-				Duration = string.IsNullOrEmpty(unitTestResult.Duration)
-					? TimeSpan.Zero
-					: TimeSpan.Parse(unitTestResult.Duration),
-				Status = ResolveStatus(unitTestResult.Outcome)
+				Duration = duration,
+				Status = ResolveStatus(unitTestResult.Outcome, duration)
 			};
+
 			if (unitTestResult.Output != null)
 			{
 				addTestResultCommand.Messages = unitTestResult.Output.StdOut;
@@ -92,6 +96,15 @@ namespace TestsStore.Api.Infrastructure.Parsers.Trx
 			if (status.Equals("NotExecuted"))
 			{
 				return "Skipped";
+			}
+
+			return status;
+		}
+		private static string ResolveStatus(string status, TimeSpan duration)
+		{
+			if (status.Equals("NotExecuted"))
+			{
+				return duration == TimeSpan.Zero ? "Inconclusive" : "Skipped";
 			}
 
 			return status;

@@ -66,13 +66,14 @@ namespace TestsStore.Api.Controllers
 			return Ok(testResults);
 		}
 
+		//GET testresult/summary/build/{buildId:Guid}
 		[HttpGet]
-		[Route("testresult/summary/build/{buildId:Guid}")]
-		private async Task<ActionResult<IEnumerable<TestResultsSummaryViewModel>>> GetTestsResultsSummary(Guid buildId)
+		[Route("summary/build/{buildId:Guid}")]
+		public async Task<ActionResult<IEnumerable<TestResultsSummaryViewModel>>> GetTestsResultsSummary(Guid buildId)
 		{
-			var testStatistic = await _testResultRepository.GetSummary(buildId);
+			var testResultSummary = await _testResultRepository.GetSummary(buildId);
 
-			var testResultsSummaryViewModels = testStatistic.Select(x => new TestResultsSummaryViewModel
+			var testResultsSummaryViewModels = testResultSummary.Select(x => new TestResultsSummaryViewModel
 			{
 				Status = x.Status.Name,
 				Count = x.Count

@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TestsStore.Api.Infrastructure.Parsers;
+using TestsStore.Api.Models;
 
 namespace TestsStore.Api.Infrastructure.Commands
 {
@@ -24,34 +26,56 @@ namespace TestsStore.Api.Infrastructure.Commands
 			var parser = ParserFactory.Create(command.FileType);
 			var parseResult = parser.Parse(command.Stream);
 
-			var createProjectCommand = new CreateProjectCommand
-			{
-				Name = command.ProjectName
-			};
-			var projectCommandResult = await _projectCommandHandler.ExecuteAsync(createProjectCommand);
+			var projectCommandResult = await CreateProject(command);
 			if (!projectCommandResult.Success)
 				return FailedResult();
 
-			var createBuildCommand = parseResult.CreateBuildCommand;
-			createBuildCommand.ProjectId = projectCommandResult.Result.Id;
-			var buildCommandResult = await _buildCommandHandler.ExecuteAsync(createBuildCommand);
+			var project = projectCommandResult.Result;
+
+			var buildCommandResult = await CreateBuild(parseResult, project);
 			if (!buildCommandResult.Success)
 				return FailedResult();
 
-			foreach (var addTestResultCommand in parseResult.CreateTestResultCommands)
-			{
-				addTestResultCommand.ProjectId = projectCommandResult.Result.Id;
-				addTestResultCommand.BuildId = buildCommandResult.Result.Id;
-			}
-
-			var addBatchTestResultCommand = new AddBatchTestResultCommand
-				{CreateTestResultCommands = parseResult.CreateTestResultCommands};
-			var testResultCommandResult = await _testResultCommandHandler.ExecuteAsync(addBatchTestResultCommand);
+			var build = buildCommandResult.Result;
+			var testResultCommandResult = await CreateTestResults(build, parseResult);
 
 			if (!testResultCommandResult.Success)
 				return FailedResult();
 
 			return SuccessResult();
+		}
+
+		private async Task<ICommandResult<Project>> CreateProject(UploadTestResultCommand command)
+		{
+			var createProjectCommand = new CreateProjectCommand(command.ProjectName);
+			var projectCommandResult = await _projectCommandHandler.ExecuteAsync(createProjectCommand);
+			return projectCommandResult;
+		}
+
+		private async Task<ICommandResult<Build>> CreateBuild(BuildParseResult parseResult, Project project)
+		{
+			var createBuildCommand = new CreateBuildCommand(project.Id, parseResult.Name, parseResult.Status,
+				parseResult.StartTime, parseResult.EndTime);
+			var buildCommandResult = await _buildCommandHandler.ExecuteAsync(createBuildCommand);
+
+			return buildCommandResult;
+		}
+
+		private async Task<ICommandResult> CreateTestResults(Build build, BuildParseResult parseResult)
+		{
+			var testResultCommands = new List<CreateTestResultCommand>();
+			foreach (var testResult in parseResult.TestResults)
+			{
+				var testResultCommand = new CreateTestResultCommand(
+					build.ProjectId, build.Id, testResult.Name, testResult.ClassName,
+					testResult.Duration, testResult.Status, testResult.Messages, testResult.StackTrace,
+					testResult.ErrorMessage);
+				testResultCommands.Add(testResultCommand);
+			}
+
+			var addBatchTestResultCommand = new AddBatchTestResultCommand(testResultCommands);
+			var testResultCommandResult = await _testResultCommandHandler.ExecuteAsync(addBatchTestResultCommand);
+			return testResultCommandResult;
 		}
 
 		private static CommandResult FailedResult()

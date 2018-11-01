@@ -1,20 +1,29 @@
 ﻿using System;
-using TestsStore.Api.Models;
 
 namespace TestsStore.Api.Infrastructure.Commands
 {
 	public class CreateBuildCommand : ICommand
 	{
-		public Guid Id { get; set; } = Guid.NewGuid();
+		public CreateBuildCommand(Guid projectId, string name, string status, DateTime startTime, DateTime endTime)
+		{
+			Id = Guid.NewGuid(); 
+			ProjectId = projectId;
+			Name = name;
+			Status = status;
+			StartTime = startTime;
+			EndTime = endTime;
+		}
 
-		public Guid ProjectId { get; set; }
+		public Guid Id { get; }
 
-		public string Name { get; set; }
+		public Guid ProjectId { get; }
 
-		public string Status { get; set; }
+		public string Name { get; }
 
-		public DateTime StartTime { get; set; }
+		public string Status { get; }
 
-		public DateTime EndTime { get; set; }
+		public DateTime StartTime { get; }
+
+		public DateTime EndTime { get; }
 	}
 }

@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TestsStore.Api.FunctionalTests.Utilities;
 using TestsStore.Api.Infrastructure;
-using TestsStore.Api.Models;
 
 namespace TestsStore.Api.FunctionalTests
 {

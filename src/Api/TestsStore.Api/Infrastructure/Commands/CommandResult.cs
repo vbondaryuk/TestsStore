@@ -7,17 +7,16 @@
 			Success = success;
 		}
 
-		public bool Success { get; set; }
+		public bool Success { get; }
 	}
 
 	public class CommandResult<TValue> : CommandResult, ICommandResult<TValue>
 	{
 		public CommandResult(bool success, TValue result) : base(success)
 		{
-			Success = success;
 			Result = result;
 		}
 
-		public TValue Result { get; set; }
+		public TValue Result { get; }
 	}
 }

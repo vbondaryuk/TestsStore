@@ -2,8 +2,8 @@
 
 namespace TestsStore.Api.Infrastructure.Parsers
 {
-	public interface ITestResultParser
+	public interface IBuildResultParser
 	{
-		ParseResult Parse(Stream stream);
+		BuildParseResult Parse(Stream stream);
 	}
 }

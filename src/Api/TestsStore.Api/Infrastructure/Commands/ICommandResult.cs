@@ -2,11 +2,11 @@
 {
 	public interface ICommandResult
 	{
-		bool Success { get; set; }
+		bool Success { get; }
 	}
 
 	public interface ICommandResult<TValue> : ICommandResult
 	{
-		TValue Result { get; set; }
+		TValue Result { get; }
 	}
 }

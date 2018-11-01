@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TestsStore.Api.Infrastructure.Commands;
+using TestsStore.Api.Infrastructure.Parsers.Trx;
 
 namespace TestsStore.Api.Controllers
 {
@@ -16,21 +18,18 @@ namespace TestsStore.Api.Controllers
 			_uploadTestResultCommandHandler = uploadTestResultCommandHandler;
 		}
 
-		// POSt api/upload/trx
+		// POSt api/upload
 		[HttpPost]
 		[DisableRequestSizeLimit]
-		[Route("trx")]
-		public async Task<ActionResult> TrxUpload([FromBody] string projectName, [FromBody] string type)
+		public async Task<ActionResult> Upload([FromForm] string projectName)
 		{
 			var file = Request.Form.Files?.FirstOrDefault();
-			if (file == null) return BadRequest("Trx file should be included");
+			if (file == null)
+				return BadRequest("File should be included");
 
-			var uploadTestResultCommand = new UploadTestResultCommand
-			{
-				ProjectName = projectName,
-				FileType = type,
-				Stream = file.OpenReadStream()
-			};
+			var fileStream = file.OpenReadStream();
+			var fileType = Path.GetExtension(file.FileName).Substring(1);
+			var uploadTestResultCommand = new UploadTestResultCommand(projectName, fileType, fileStream);
 			var commandResult = await _uploadTestResultCommandHandler.ExecuteAsync(uploadTestResultCommand);
 
 			if (!commandResult.Success)

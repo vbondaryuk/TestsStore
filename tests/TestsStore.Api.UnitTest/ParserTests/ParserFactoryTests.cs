@@ -13,7 +13,7 @@ namespace TestsStore.Api.UnitTest.ParserTests
 		{
 			var parser = ParserFactory.Create(ParserType.Trx);
 
-			Assert.IsTrue(parser is TrxTestResultParser);
+			Assert.IsTrue(parser is TrxBuildResultParser);
 		}
 
 		[TestMethod]

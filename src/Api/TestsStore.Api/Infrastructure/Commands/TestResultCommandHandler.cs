@@ -25,9 +25,10 @@ namespace TestsStore.Api.Infrastructure.Commands
 		public async Task<ICommandResult> ExecuteAsync(AddBatchTestResultCommand command)
 		{
 			var testResults = new List<TestResult>(command.CreateTestResultCommands.Count);
+
 			foreach (var createTestResultCommand in command.CreateTestResultCommands)
 			{
-				var testResult = await CreateTestResult(createTestResultCommand);
+				var testResult = await CreateTestResultAsync(createTestResultCommand);
 				testResults.Add(testResult);
 			}
 
@@ -38,17 +39,17 @@ namespace TestsStore.Api.Infrastructure.Commands
 
 		public async Task<ICommandResult<TestResult>> ExecuteAsync(CreateTestResultCommand command)
 		{
-			var testResult = await CreateTestResult(command);
+			var testResult = await CreateTestResultAsync(command);
 
 			await _testResultRepository.Add(testResult);
 
 			return new CommandResult<TestResult>(true, testResult);
 		}
 
-		private async Task<TestResult> CreateTestResult(CreateTestResultCommand command)
+		private async Task<TestResult> CreateTestResultAsync(CreateTestResultCommand command)
 		{
 			var status = Enumeration.FromDisplayName<Status>(command.Status);
-			var test = await GetTest(command);
+			var test = await GetTestAsync(command);
 
 			var testResult = new TestResult
 			{
@@ -64,15 +65,10 @@ namespace TestsStore.Api.Infrastructure.Commands
 			return testResult;
 		}
 
-		private async Task<Test> GetTest(CreateTestResultCommand command)
+		private async Task<Test> GetTestAsync(CreateTestResultCommand command)
 		{
 			var createOrUpdateTestCommand =
-				new CreateOrUpdateTestCommand
-				{
-					Name = command.Name,
-					ClassName = command.ClassName,
-					ProjectId = command.ProjectId
-				};
+				new CreateOrUpdateTestCommand(command.Name, command.ClassName, command.ProjectId);
 
 			var createOrUpdateTestCommandResult = await _testCommandHandler.ExecuteAsync(createOrUpdateTestCommand);
 			var test = createOrUpdateTestCommandResult.Result;

@@ -6,13 +6,13 @@ namespace TestsStore.Api.Infrastructure.Parsers
 {
 	public class ParserFactory
 	{
-		private static readonly Dictionary<ParserType, Func<ITestResultParser>> FactoryDictionary =
-			new Dictionary<ParserType, Func<ITestResultParser>>
+		private static readonly Dictionary<ParserType, Func<IBuildResultParser>> FactoryDictionary =
+			new Dictionary<ParserType, Func<IBuildResultParser>>
 			{
-				{ParserType.Trx, () => new TrxTestResultParser()}
+				{ParserType.Trx, () => new TrxBuildResultParser()}
 			};
 
-		public static ITestResultParser Create(ParserType parserType)
+		public static IBuildResultParser Create(ParserType parserType)
 		{
 			if (FactoryDictionary.TryGetValue(parserType, out var testResultParser))
 			{
@@ -22,7 +22,7 @@ namespace TestsStore.Api.Infrastructure.Parsers
 			throw new ArgumentException(nameof(parserType));
 		}
 
-		public static ITestResultParser Create(string parserType)
+		public static IBuildResultParser Create(string parserType)
 		{
 			ParserType type = Enum.Parse<ParserType>(parserType, true);
 

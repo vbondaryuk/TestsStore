@@ -25,12 +25,12 @@ namespace TestsStore.Api.Infrastructure.Filters
 
 			var json = new JsonErrorResponse
 			{
-				Messages = new[] { "An error ocurred." }
+				Messages = new[] { "An error occurred." }
 			};
 
 			if (env.IsDevelopment())
 			{
-				json.DeveloperMeesage = context.Exception;
+				json.DeveloperMessage = context.Exception;
 			}
 
 			context.Result = new InternalServerErrorObjectResult(json);
@@ -42,7 +42,7 @@ namespace TestsStore.Api.Infrastructure.Filters
 		{
 			public string[] Messages { get; set; }
 
-			public object DeveloperMeesage { get; set; }
+			public object DeveloperMessage { get; set; }
 		}
 	}
 }
