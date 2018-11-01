@@ -1,7 +1,7 @@
 <nav class="navbar bg-light">
   <a class="navbar-brand" [routerLink]="['/projects']" routerLinkActive="active">Projects</a>
 </nav>
-<div class="build-details" *ngIf="buildDetails">
+<div class="build-details" *ngIf="build">
   <div class="card bg-light">
     <div class="card-header">
       Build details
@@ -11,25 +11,25 @@
         <tbody>
         <tr>
           <td class="testresult-detail__name">Name</td>
-          <td>{{buildDetails.name}}</td>
+          <td>{{build.name}}</td>
         </tr>
         <tr>
           <td class="testresult-detail__name">Status</td>
-          <td class="text-white text-center" [style.background-color]='getBackgroundColor(buildDetails.status)'>
-            {{buildDetails.status}}
+          <td class="text-white text-center" [style.background-color]='getBackgroundColor(build.status.name)'>
+            {{build.status.name}}
           </td>
         </tr>
         <tr>
           <td class="testresult-detail__name">Duration</td>
-          <td>{{buildDetails.duration / 1000 | number : '1.2-2' }} sec</td>
+          <td>{{build.duration / 1000 | number : '1.2-2' }} sec</td>
         </tr>
         <tr>
           <td class="testresult-detail__name">Start time</td>
-          <td>{{buildDetails.startTime | date:'M/d/yy, h:mm:ss a'}}</td>
+          <td>{{build.startTime | date:'M/d/yy, h:mm:ss a'}}</td>
         </tr>
         <tr>
           <td class="testresult-detail__name">End time</td>
-          <td>{{buildDetails.endTime | date:'M/d/yy, h:mm:ss a'}}</td>
+          <td>{{build.endTime | date:'M/d/yy, h:mm:ss a'}}</td>
         </tr>
         </tbody>
       </table>

@@ -8,7 +8,7 @@ import {MatPaginator} from '@angular/material';
 import {tap, distinctUntilChanged, debounceTime} from 'rxjs/operators';
 import {TestResultDataSource} from '../../services/testresult.datasource';
 import {fromEvent} from 'rxjs';
-import {IBuildDetails} from '../../../../core/models/buildDetails';
+import {IBuild} from '../../../../core/models/build';
 
 @Component({
   selector: 'app-build-details',
@@ -25,7 +25,7 @@ import {IBuildDetails} from '../../../../core/models/buildDetails';
 export class BuildDetailsComponent implements OnInit {
 
   buildId: string;
-  buildDetails: IBuildDetails;
+  build: IBuild;
   expandedTestResult: ITestResult;
 
   dataSource: TestResultDataSource;
@@ -55,11 +55,12 @@ export class BuildDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.setTestResultDataSource();
+    this.initTestResultDataSource();
+    this.retrieveBuild();
     this.populateChart();
   }
 
-  setTestResultDataSource() {
+  initTestResultDataSource() {
     this.dataSource = new TestResultDataSource(this.testsStoreService);
     this.dataSource.loadTestResults(this.buildId, '', 'asc', 0, 10);
     this.paginator.page
@@ -78,14 +79,20 @@ export class BuildDetailsComponent implements OnInit {
       .subscribe();
   }
 
+  retrieveBuild() {
+    this.testsStoreService.getBuild(this.buildId)
+      .subscribe(build => {
+        this.build = build;
+      });
+  }
+
   populateChart() {
-    this.testsStoreService.getBuildDetails(this.buildId)
-      .subscribe(buildDetals => {
-        this.buildDetails = buildDetals;
+    this.testsStoreService.getTestResultsSummary(this.buildId)
+      .subscribe(testResultsSummary => {
 
         this.chartData = [];
         this.colorScheme.domain = [];
-        this.buildDetails.testsSummary.forEach(testSummary => {
+        testResultsSummary.forEach(testSummary => {
           const keyVal = {
             name: testSummary.status,
             value: testSummary.count

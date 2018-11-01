@@ -13,6 +13,6 @@ export class UploadComponent {
   }
 
   public openUploadDialog() {
-    const dialogRef = this.dialog.open(DialogComponent, {width: '50%', height: '50%'});
+    this.dialog.open(DialogComponent, {width: '50%', height: '50%'});
   }
 }

@@ -7,19 +7,19 @@ import {Observable, Subject} from 'rxjs';
   providedIn: 'root'
 })
 export class UploadService {
-  baseUrl = environment.baseUrl + 'api/upload/';
+  url = environment.baseUrl + 'api/upload/';
 
   constructor(private http: HttpClient) {
   }
 
-  public uploadTrx(files: Set<File>): { [key: string]: Observable<number> } {
+  public upload(projectName: string, files: Set<File>): { [key: string]: Observable<number> } {
     const status = {};
     files.forEach(file => {
       const formData: FormData = new FormData();
+      formData.append('projectName', projectName);
       formData.append(file.name, file);
 
-      const url = this.baseUrl + 'trx';
-      const req = new HttpRequest('POST', url, formData, {
+      const req = new HttpRequest('POST', this.url, formData, {
         reportProgress: true
       });
 

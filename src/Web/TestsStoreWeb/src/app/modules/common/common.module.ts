@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -50,6 +50,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatButtonModule,
     MatDialogModule,
     MatListModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatProgressBarModule,
     FlexLayoutModule,
     BrowserAnimationsModule

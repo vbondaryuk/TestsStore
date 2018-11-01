@@ -8,6 +8,7 @@ import {IBuild} from '../models/build';
 import {IBuildDetails} from 'src/app/core/models/buildDetails';
 import {ITestResult} from '../models/testResult';
 import {IPaginatedItems} from '../models/paginatedItems';
+import {ITestsSummary} from '../models/testSummary';
 
 @Injectable({providedIn: 'root'})
 export class TestsStoreService {
@@ -27,9 +28,19 @@ export class TestsStoreService {
       .pipe(catchError(this.handleError<IBuild[]>('getBuilds')));
   }
 
+  getBuild(buildId: string): Observable<IBuild> {
+    return this.http.get<IBuild>(this.baseUrl + 'build/id/' + buildId)
+      .pipe(catchError(this.handleError<IBuild>('getBuild')));
+  }
+
   getBuildDetails(buildId: string): Observable<IBuildDetails> {
     return this.http.get<IBuildDetails>(this.baseUrl + 'build/id/' + buildId + '/details')
       .pipe(catchError(this.handleError<IBuildDetails>('getBuildDetails')));
+  }
+
+  getTestResultsSummary(buildId: string): Observable<ITestsSummary[]> {
+    return this.http.get<ITestsSummary[]>(`${this.baseUrl}testresult/summary/build/${buildId}`)
+      .pipe(catchError(this.handleError<ITestsSummary[]>('getBuildDetails')));
   }
 
   getTestStatistic(testId: string): Observable<ITestResult[]> {

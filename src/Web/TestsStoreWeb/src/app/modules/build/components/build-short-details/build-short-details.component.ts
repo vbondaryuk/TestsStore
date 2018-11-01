@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {TestsStoreService} from 'src/app/core/services/testsstore.service';
-import {IBuildDetails} from 'src/app/core/models/buildDetails';
 import {StatusService} from 'src/app/core/services/status.service';
+import {ITestsSummary} from '../../../../core/models/testSummary';
 
 @Component({
   selector: 'app-build-short-details',
@@ -15,14 +15,13 @@ export class BuildShortDetailsComponent implements OnInit {
   @Input()
   buildIdSubject: BehaviorSubject<string>;
   buildId: string;
-  buildDetails: IBuildDetails;
+  private testResultSummary: ITestsSummary[];
 
   chartData: any[];
   colorScheme = {
     domain: []
   };
   view: any[] = [500, 200];
-
 
   constructor(
     private testsStoreService: TestsStoreService,
@@ -44,16 +43,12 @@ export class BuildShortDetailsComponent implements OnInit {
       this.buildId = buildId;
       this.clearChart();
 
-      this.testsStoreService.getBuildDetails(this.buildId)
-        .subscribe(buildDetails => {
-          this.buildDetails = buildDetails;
+      this.testsStoreService.getTestResultsSummary(this.buildId)
+        .subscribe(testResultSummary => {
+          this.testResultSummary = testResultSummary;
           this.showChart();
         });
     });
-  }
-
-  onSelect(event) {
-    console.log(event);
   }
 
   clearChart() {
@@ -64,11 +59,11 @@ export class BuildShortDetailsComponent implements OnInit {
   showChart() {
     this.clearChart();
 
-    if (this.buildDetails.testsSummary.length === 0) {
+    if (this.testResultSummary.length === 0) {
       return;
     }
 
-    this.buildDetails.testsSummary.forEach(testSummary => {
+    this.testResultSummary.forEach(testSummary => {
       const keyVal = {
         name: testSummary.status,
         value: testSummary.count

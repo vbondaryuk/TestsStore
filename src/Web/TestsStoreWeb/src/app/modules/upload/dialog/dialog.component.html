@@ -1,6 +1,15 @@
 <input type="file" #file style="display: none;" (change)="onFileAdded()" multiple/>
 <div class="container" fxLayout="column"  fxLayoutAlign="space-evenly stretch">
   <h1 mat-dialog-title>Upload test results</h1>
+
+  <form [formGroup]="options">
+    <mat-form-field>
+      <input matInput placeholder="Project name" formControlName="projectName" required>
+    </mat-form-field>
+  </form>
+
+
+
   <div>
     <button [disabled]="uploading || uploadSuccessful" mat-raised-button color="primary" class="add-files-btn" (click)="addFiles()">
       Add *trx files
