@@ -7,12 +7,12 @@ namespace TestsStore.Api.Infrastructure.Repositories
 {
 	public interface IBuildRepository
 	{
-		Task<Build> GetById(Guid id);
+		Task<Build> GetByIdAsync(Guid id);
 
-		Task<ICollection<Build>> GetByProjectId(Guid projectId);
+		Task<ICollection<Build>> GetByProjectIdAsync(Guid projectId);
 
-		Task<Build> Add(Build build);
+		Task<Build> AddAsync(Build build);
 
-		Task<Build> Updated(Build build);
+		Task<Build> UpdatedAsync(Build build);
 	}
 }

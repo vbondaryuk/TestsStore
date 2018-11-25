@@ -8,18 +8,18 @@ namespace TestsStore.Api.Infrastructure.Filters
 {
 	public class HttpGlobalExceptionFilter : IExceptionFilter
 	{
-		private readonly IHostingEnvironment env;
-		private readonly ILogger<HttpGlobalExceptionFilter> logger;
+		private readonly IHostingEnvironment _environment;
+		private readonly ILogger<HttpGlobalExceptionFilter> _logger;
 
-		public HttpGlobalExceptionFilter(IHostingEnvironment env, ILogger<HttpGlobalExceptionFilter> logger)
+		public HttpGlobalExceptionFilter(IHostingEnvironment environment, ILogger<HttpGlobalExceptionFilter> logger)
 		{
-			this.env = env;
-			this.logger = logger;
+			_environment = environment;
+			_logger = logger;
 		}
 
 		public void OnException(ExceptionContext context)
 		{
-			logger.LogError(new EventId(context.Exception.HResult),
+			_logger.LogError(new EventId(context.Exception.HResult),
 				context.Exception,
 				context.Exception.Message);
 
@@ -28,7 +28,7 @@ namespace TestsStore.Api.Infrastructure.Filters
 				Messages = new[] { "An error occurred." }
 			};
 
-			if (env.IsDevelopment())
+			if (_environment.IsDevelopment())
 			{
 				json.DeveloperMessage = context.Exception;
 			}

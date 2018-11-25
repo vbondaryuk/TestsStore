@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestsStore.Api.Infrastructure.Parsers;
-using TestsStore.Api.Infrastructure.Parsers.Trx;
+using TestsStore.Api.Application.Parsers;
+using TestsStore.Api.Application.Parsers.Trx;
 
 namespace TestsStore.Api.UnitTest.ParserTests
 {

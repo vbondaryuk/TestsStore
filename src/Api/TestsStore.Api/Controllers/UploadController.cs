@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TestsStore.Api.Infrastructure.Commands;
-using TestsStore.Api.Infrastructure.Parsers.Trx;
+using TestsStore.Api.Application.Commands.UploadCommands;
 
 namespace TestsStore.Api.Controllers
 {
@@ -11,17 +10,17 @@ namespace TestsStore.Api.Controllers
 	[ApiController]
 	public class UploadController : Controller
 	{
-		private readonly UploadTestResultCommandHandler _uploadTestResultCommandHandler;
+		private readonly IUploadTestResultCommandHandler _uploadTestResultCommandHandler;
 
-		public UploadController(UploadTestResultCommandHandler uploadTestResultCommandHandler)
+		public UploadController(IUploadTestResultCommandHandler uploadTestResultCommandHandler)
 		{
 			_uploadTestResultCommandHandler = uploadTestResultCommandHandler;
 		}
 
-		// POSt api/upload
+		// POST api/upload
 		[HttpPost]
 		[DisableRequestSizeLimit]
-		public async Task<ActionResult> Upload([FromForm] string projectName)
+		public async Task<IActionResult> Upload([FromForm] string projectName)
 		{
 			var file = Request.Form.Files?.FirstOrDefault();
 			if (file == null)

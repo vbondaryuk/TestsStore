@@ -14,10 +14,10 @@ namespace TestsStore.Api.ViewModels
 
 		public PaginatedItems(int pageIndex, int pageSize, long count, IEnumerable<T> data)
 		{
-			this.PageIndex = pageIndex;
-			this.PageSize = pageSize;
-			this.Count = count;
-			this.Data = data;
+			PageIndex = pageIndex;
+			PageSize = pageSize;
+			Count = count;
+			Data = data;
 		}
 	}
 }

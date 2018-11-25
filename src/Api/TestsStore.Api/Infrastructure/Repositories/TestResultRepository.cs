@@ -28,7 +28,7 @@ namespace TestsStore.Api.Infrastructure.Repositories
 			return testResult;
 		}
 
-		//Todo probably better result is write sql query
+		//TODO probably better result is write an sql query
 		public async Task<ICollection<(Status Status, int Count)>> GetSummary(Guid buildId)
 		{
 			var testSummary = await _testsStoreContext.TestResults
@@ -63,12 +63,12 @@ namespace TestsStore.Api.Infrastructure.Repositories
 			if (status != null)
 				query = query.Where(x => x.Status.Id == status.Id);
 
+			var totalItems = await query.LongCountAsync();
+
 			query = query.OrderBy(c => c.Test.ClassName)
 				.ThenBy(x => x.Test.Name)
 				.Include(x => x.Test)
 				.Include(x => x.Status);
-
-			var totalItems = await query.LongCountAsync();
 
 			query = query
 				.Skip(pageSize * pageIndex)

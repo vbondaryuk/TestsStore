@@ -10,8 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
+using TestsStore.Api.Application.Commands.BuildCommands;
+using TestsStore.Api.Application.Commands.ProjectCommands;
+using TestsStore.Api.Application.Commands.TestCommands;
+using TestsStore.Api.Application.Commands.TestResultCommands;
+using TestsStore.Api.Application.Queries.BuildQueries;
+using TestsStore.Api.Application.Queries.ProjectQueries;
+using TestsStore.Api.Application.Queries.TestQueries;
+using TestsStore.Api.Application.Queries.TestResultQueries;
 using TestsStore.Api.Infrastructure;
-using TestsStore.Api.Infrastructure.Commands;
 using TestsStore.Api.Infrastructure.Filters;
 using TestsStore.Api.Infrastructure.Repositories;
 
@@ -53,11 +60,14 @@ namespace TestsStore.Api
 				.AddScoped<IProjectRepository, ProjectRepository>()
 				.AddScoped<ITestRepository, TestRepository>()
 				.AddScoped<ITestResultRepository, TestResultRepository>()
-				.AddScoped<BuildCommandHandler>()
-				.AddScoped<ProjectCommandHandler>()
-				.AddScoped<TestCommandHandler>()
-				.AddScoped<TestResultCommandHandler>()
-				.AddScoped<UploadTestResultCommandHandler>();
+				.AddScoped<IBuildCommandHandler, BuildCommandHandler>()
+				.AddScoped<IProjectCommandHandler, ProjectCommandHandler>()
+				.AddScoped<ITestCommandHandler, TestCommandHandler>()
+				.AddScoped<ITestResultCommandHandler, TestResultCommandHandler>()
+				.AddScoped<IProjectQueries, ProjectQueries>()
+				.AddScoped<ITestQueries, TestQueries>()
+				.AddScoped<ITestResultQueries, TestResultQueries>()
+				.AddScoped<IBuildQueries, BuildQueries>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TestsStore.Api.Infrastructure.Commands;
+using TestsStore.Api.Application.Commands.TestResultCommands;
+using TestsStore.Api.Application.Queries.TestQueries;
+using TestsStore.Api.Application.Queries.TestResultQueries;
 using TestsStore.Api.Infrastructure.Repositories;
 using TestsStore.Api.Models;
 using TestsStore.Api.ViewModels;
@@ -14,24 +16,24 @@ namespace TestsStore.Api.Controllers
 	[ApiController]
 	public class TestResultController : Controller
 	{
-		private readonly TestResultCommandHandler _testResultCommandHandler;
-		private readonly ITestResultRepository _testResultRepository;
+		private readonly ITestResultCommandHandler _testResultCommandHandler;
+		private readonly ITestResultQueries _testResultQueries;
 
 		public TestResultController(
-			TestResultCommandHandler testResultCommandHandler,
-			ITestResultRepository testResultRepository)
+			ITestResultCommandHandler testResultCommandHandler,
+			ITestResultQueries testResultQueries)
 
 		{
 			_testResultCommandHandler = testResultCommandHandler;
-			_testResultRepository = testResultRepository;
+			_testResultQueries = testResultQueries;
 		}
 
 		// GET testresult/id/guid
 		[HttpGet]
 		[Route("id/{id:Guid}")]
-		public async Task<ActionResult<TestResult>> Get(Guid id)
+		public async Task<IActionResult> Get(Guid id)
 		{
-			var testResult = await _testResultRepository.GetById(id);
+			var testResult = await _testResultQueries.GetAsync(id);
 			if (testResult is null)
 				return BadRequest();
 
@@ -41,7 +43,7 @@ namespace TestsStore.Api.Controllers
 		// GET testresult/items/build/guid[?filter=test&status=success&pageSize=10&pageIndex=1]
 		[HttpGet]
 		[Route("items/build/{buildId:Guid}")]
-		public async Task<ActionResult<PaginatedItems<TestResult>>> GetItems(
+		public async Task<IActionResult> GetItems(
 			Guid buildId,
 			[FromQuery] string filter,
 			[FromQuery] string status,
@@ -51,7 +53,7 @@ namespace TestsStore.Api.Controllers
 			Status statusObject = status is null ? null : Enumeration.FromDisplayName<Status>(status);
 
 			var paginatedItems =
-				await _testResultRepository.GetPaginatedItems(buildId, filter, statusObject, pageSize, pageIndex);
+				await _testResultQueries.GetItemsAsync(buildId, statusObject, filter, pageSize, pageIndex);
 
 			return Ok(paginatedItems);
 		}
@@ -59,9 +61,9 @@ namespace TestsStore.Api.Controllers
 		// GET testresult/items/test/guid/statistic[?count=1]
 		[HttpGet]
 		[Route("items/test/{testId:Guid}/statistic")]
-		public async Task<ActionResult<TestResult>> GetTestHistory(Guid testId, [FromQuery] int count = 10)
+		public async Task<IActionResult> GetItemsByTestId(Guid testId, [FromQuery] int count = 10)
 		{
-			var testResults = await _testResultRepository.GetByTestId(testId, count);
+			var testResults = await _testResultQueries.GetByTestIdAsync(testId, count);
 
 			return Ok(testResults);
 		}
@@ -69,13 +71,13 @@ namespace TestsStore.Api.Controllers
 		//GET testresult/summary/build/{buildId:Guid}
 		[HttpGet]
 		[Route("summary/build/{buildId:Guid}")]
-		public async Task<ActionResult<IEnumerable<TestResultsSummaryViewModel>>> GetTestsResultsSummary(Guid buildId)
+		public async Task<IActionResult> GetTestsResultsSummary(Guid buildId)
 		{
-			var testResultSummary = await _testResultRepository.GetSummary(buildId);
+			var testResultSummary = await _testResultQueries.GetTestResultsSummaryAsync(buildId);
 
 			var testResultsSummaryViewModels = testResultSummary.Select(x => new TestResultsSummaryViewModel
 			{
-				Status = x.Status.Name,
+				Status = x.Status,
 				Count = x.Count
 			}).ToList();
 
@@ -85,7 +87,7 @@ namespace TestsStore.Api.Controllers
 		//Post testresult/items
 		[HttpPost]
 		[Route("items")]
-		public async Task<ActionResult<IEnumerable<TestResult>>> CreateTestResult(
+		public async Task<IActionResult> CreateTestResult(
 			[FromBody] CreateTestResultCommand createTestResultCommandModel)
 		{
 			var commandResult = await _testResultCommandHandler.ExecuteAsync(createTestResultCommandModel);

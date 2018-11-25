@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TestsStore.Api.Infrastructure.Commands;
-using TestsStore.Api.Infrastructure.Repositories;
+using TestsStore.Api.Application.Commands;
+using TestsStore.Api.Application.Commands.BuildCommands;
+using TestsStore.Api.Application.Queries.BuildQueries;
 using TestsStore.Api.Models;
 
 namespace TestsStore.Api.Controllers
@@ -10,13 +11,13 @@ namespace TestsStore.Api.Controllers
 	[Route("api/[controller]")]
 	public class BuildController : Controller
 	{
-		private readonly BuildCommandHandler _buildCommandHandler;
-		private readonly IBuildRepository _buildRepository;
+		private readonly IBuildCommandHandler _buildCommandHandler;
+		private readonly IBuildQueries _buildQueries;
 
-		public BuildController(BuildCommandHandler buildCommandHandler, IBuildRepository buildRepository)
+		public BuildController(IBuildCommandHandler buildCommandHandler, IBuildQueries buildQueries)
 		{
 			_buildCommandHandler = buildCommandHandler;
-			_buildRepository = buildRepository;
+			_buildQueries = buildQueries;
 		}
 
 		// GET build/id/guid
@@ -24,7 +25,7 @@ namespace TestsStore.Api.Controllers
 		[Route("id/{id:Guid}")]
 		public async Task<IActionResult> Get(Guid id)
 		{
-			var build = await _buildRepository.GetById(id);
+			var build = await _buildQueries.GetBuildAsync(id);
 
 			if (build == null)
 				return NotFound();
@@ -37,7 +38,7 @@ namespace TestsStore.Api.Controllers
 		[Route("project/{projectId:Guid}")]
 		public async Task<IActionResult> GetByProject(Guid projectId)
 		{
-			var builds = await _buildRepository.GetByProjectId(projectId);
+			var builds = await _buildQueries.GetByProjectIdAsync(projectId);
 
 			return Ok(builds);
 		}

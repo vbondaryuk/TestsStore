@@ -16,7 +16,7 @@ namespace TestsStore.Api.Infrastructure.Repositories
 			this._testsStoreContext = testsStoreContext;
 		}
 
-		public async Task<Build> GetById(Guid id)
+		public async Task<Build> GetByIdAsync(Guid id)
 		{
 			var build = await _testsStoreContext.Builds
 				.Include(x => x.Status)
@@ -25,7 +25,7 @@ namespace TestsStore.Api.Infrastructure.Repositories
 			return build;
 		}
 
-		public async Task<ICollection<Build>> GetByProjectId(Guid projectId)
+		public async Task<ICollection<Build>> GetByProjectIdAsync(Guid projectId)
 		{
 			var builds = await _testsStoreContext.Builds
 				.Include(x => x.Status)
@@ -36,7 +36,7 @@ namespace TestsStore.Api.Infrastructure.Repositories
 			return builds;
 		}
 
-		public async Task<Build> Add(Build build)
+		public async Task<Build> AddAsync(Build build)
 		{
 			await _testsStoreContext.Builds.AddAsync(build);
 			await _testsStoreContext.SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace TestsStore.Api.Infrastructure.Repositories
 			return build;
 		}
 
-		public async Task<Build> Updated(Build build)
+		public async Task<Build> UpdatedAsync(Build build)
 		{
 			_testsStoreContext.Builds.Update(build);
 			await _testsStoreContext.SaveChangesAsync();
