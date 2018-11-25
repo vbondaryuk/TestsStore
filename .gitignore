@@ -24,7 +24,7 @@
 .vs/
 
 # MSTest test Results
-[Tt]est[Rr]esult*/
+[Tt]est[Rr]esults*/
 [Bb]uild[Ll]og.*
 
 .idea
