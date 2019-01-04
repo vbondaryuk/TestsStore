@@ -17,6 +17,11 @@ namespace TestsStore.Api.Application.Queries
 
 		public static BuildViewModel Map(Build build)
 		{
+			if (build is null)
+			{
+				return null;
+			}
+
 			return new BuildViewModel
 			{
 				Id = build.Id,

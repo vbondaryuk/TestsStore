@@ -10,14 +10,14 @@ namespace TestsStore.Api.Application.Commands.UploadCommands
 {
 	public class UploadTestResultCommandHandler : IUploadTestResultCommandHandler
 	{
-		private readonly BuildCommandHandler _buildCommandHandler;
-		private readonly ProjectCommandHandler _projectCommandHandler;
-		private readonly TestResultCommandHandler _testResultCommandHandler;
+		private readonly IBuildCommandHandler _buildCommandHandler;
+		private readonly IProjectCommandHandler _projectCommandHandler;
+		private readonly ITestResultCommandHandler _testResultCommandHandler;
 
 		public UploadTestResultCommandHandler(
-			ProjectCommandHandler projectCommandHandler,
-			BuildCommandHandler buildCommandHandler,
-			TestResultCommandHandler testResultCommandHandler)
+			IProjectCommandHandler projectCommandHandler,
+			IBuildCommandHandler buildCommandHandler,
+			ITestResultCommandHandler testResultCommandHandler)
 		{
 			_projectCommandHandler = projectCommandHandler;
 			_buildCommandHandler = buildCommandHandler;
