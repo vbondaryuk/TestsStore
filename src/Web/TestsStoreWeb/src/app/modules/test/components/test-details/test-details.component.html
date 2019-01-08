@@ -20,35 +20,35 @@
     <table class="testresult__details">
       <tbody>
         <tr *ngIf="testResult.build">
-          <td class="testresult-detail__name">Build name</td>
+          <td class="testresult-details__name">Build name</td>
           <td><a [routerLink]="['/build', testResult.build.id]" routerLinkActive="active">{{testResult.build.name}}</a></td>
         </tr>
         <tr>
-          <td class="testresult-detail__name">Class name</td>
+          <td class="testresult-details__name">Class name</td>
           <td class="testresult-details__result">{{testResult.test.className}}</td>
         </tr>
         <tr>
-          <td class="testresult-detail__name">Name</td>
+          <td class="testresult-details__name">Name</td>
           <td class="testresult-details__result">{{testResult.test.name}}</td>
         </tr>
         <tr>
-          <td class="testresult-detail__name">Status</td>
+          <td class="testresult-details__name">Status</td>
           <td class="testresult-details__result">{{testResult.status.name}}</td>
         </tr>
         <tr>
-          <td class="testresult-detail__name">Duration</td>
+          <td class="testresult-details__name">Duration</td>
           <td class="testresult-details__result">{{testResult.duration / 1000 | number : '1.2-2' }} sec</td>
         </tr>
         <tr *ngIf="testResult.message">
-          <td class="testresult-detail__name">Message</td>
+          <td class="testresult-details__name">Message</td>
           <td class="testresult-details__result">{{testResult.message}}</td>
         </tr>
         <tr *ngIf="testResult.stackTrace">
-          <td class="testresult-detail__name">Stack trace</td>
+          <td class="testresult-details__name">Stack trace</td>
           <td class="testresult-details__result">{{testResult.stackTrace}}</td>
         </tr>
         <tr *ngIf="testResult.errorMessage">
-          <td class="testresult-detail__name">Error message</td>
+          <td class="testresult-details__name">Error message</td>
           <td class="testresult-details__result">{{testResult.errorMessage}}</td>
         </tr>
       </tbody>

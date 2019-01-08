@@ -26,7 +26,7 @@ export class BuildDetailsComponent implements OnInit {
 
   buildId: string;
   build: IBuild;
-  expandedTestResult: ITestResult;
+  expandedTestResult: ITestResult | null;
 
   dataSource: TestResultDataSource;
   displayedColumns = ['className', 'name', 'status'];

@@ -85,6 +85,7 @@ namespace TestsStore.Api.Infrastructure.Repositories
 				.Include(x => x.Status)
 				.Include(x => x.Test)
 				.Include(x => x.Build)
+				.Include(x => x.Build.Status)
 				.Where(x => x.TestId == testId)
 				.OrderByDescending(x => x.Build.StartTime)
 				.Take(count)

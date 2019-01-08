@@ -1,6 +1,4 @@
-tr.testresult-detail-row {
-  height: 0;
-}
+
 
 tr.testresult-row:not(.testresult-expanded-row):hover {
   background: #f5f5f5;
@@ -8,6 +6,10 @@ tr.testresult-row:not(.testresult-expanded-row):hover {
 
 tr.testresult-row:not(.testresult-expanded-row):active {
   background: #efefef;
+}
+
+tr.testresult-detail-row {
+  height: 0;
 }
 
 .testresult-row td {
@@ -20,10 +22,6 @@ tr.testresult-row:not(.testresult-expanded-row):active {
 
 table {
   width: 100%;
-}
-
-.testresult-detail__name {
-  width: 110px;
 }
 
 .build-details__tests-cart, .build-details {
@@ -42,4 +40,31 @@ table {
 .build-details__tests-cart .card-body {
   width: 700px;
   height: 200px;
+}
+
+.testresult-details__name{
+  width: 110px;
+}
+
+.testresult__details tbody{
+  display: block;
+  max-height: 600px;
+  overflow: auto;
+}
+
+.testresult-details__result{
+  word-break: break-word;
+}
+
+.loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

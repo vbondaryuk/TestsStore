@@ -9,7 +9,6 @@ const routes: Routes = [
   {path: '', redirectTo: 'projects', pathMatch: 'full'},
   {path: '**', redirectTo: 'welcome', pathMatch: 'full'},
   {path: 'projects', component: ProjectsComponent},
-  {path: 'upload', component: UploadComponent},
   {path: 'build/:id', component: BuildDetailsComponent}
 ];
 

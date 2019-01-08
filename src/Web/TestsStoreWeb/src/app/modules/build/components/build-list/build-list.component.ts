@@ -33,7 +33,7 @@ export class BuildListComponent implements OnInit {
     private testsStoreService: TestsStoreService,
     private statusService: StatusService) {
     this.dataSource.filterPredicate = (data: IBuild, filter: string) =>
-      data.name.toLowerCase().indexOf(filter) !== -1 || data.status.name.toLowerCase().indexOf(filter) !== -1;
+      data.name.toLowerCase().indexOf(filter) !== -1 || data.status.toLowerCase().indexOf(filter) !== -1;
   }
 
   ngOnInit() {
